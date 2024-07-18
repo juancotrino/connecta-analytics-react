@@ -2,6 +2,14 @@
 
 import type { User } from '@/types/user';
 
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, collection, doc, getDocs, setDoc } from 'firebase/firestore';
+
+const app = initializeApp();
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 function generateToken(): string {
   const arr = new Uint8Array(12);
   window.crypto.getRandomValues(arr);
@@ -21,6 +29,7 @@ export interface SignUpParams {
   lastName: string;
   email: string;
   password: string;
+  roles: string[];
 }
 
 export interface SignInWithOAuthParams {
@@ -37,14 +46,29 @@ export interface ResetPasswordParams {
 }
 
 class AuthClient {
-  async signUp(_: SignUpParams): Promise<{ error?: string }> {
+  async signUp(params: SignUpParams): Promise<{ error?: string }> {
     // Make API request
+    const { firstName, lastName, email, password , roles} = params;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    // We do not handle the API, so we'll just generate a token and store it in localStorage.
-    const token = generateToken();
-    localStorage.setItem('custom-auth-token', token);
+      // Optionally set additional user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), { email });
 
-    return {};
+      const token = await user.getIdToken();
+      localStorage.setItem('custom-auth-token', token);
+
+      return {};
+    } catch (error) {
+      return { error: (error as Error).message };
+    }
+
+    // // We do not handle the API, so we'll just generate a token and store it in localStorage.
+    // const token = generateToken();
+    // localStorage.setItem('custom-auth-token', token);
+
+    // return {};
   }
 
   async signInWithOAuth(_: SignInWithOAuthParams): Promise<{ error?: string }> {
@@ -77,6 +101,11 @@ class AuthClient {
 
   async getUser(): Promise<{ data?: User | null; error?: string }> {
     // Make API request
+
+    getAuth().getUser(uid).then((userRecord) => {
+      // The claims can be accessed on the user record.
+      console.log(userRecord.customClaims['admin']);
+    });
 
     // We do not handle the API, so just check if we have a token in localStorage.
     const token = localStorage.getItem('custom-auth-token');
