@@ -1,9 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { browserLocalPersistence, browserSessionPersistence, setPersistence } from 'firebase/auth';
 
 import type { User } from '@/types/user';
-import { authClient } from '@/lib/auth/client';
+import { auth, authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
 
 export interface UserContextValue {
@@ -28,11 +29,12 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
 
   const checkSession = React.useCallback(async (): Promise<void> => {
     try {
+      await setPersistence(auth, browserLocalPersistence);
       const { data, error } = await authClient.getUser();
 
       if (error) {
         logger.error(error);
-        setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
+        setState((prev) => ({ ...prev, user: null, error: error || 'Something went wrong', isLoading: false }));
         return;
       }
 

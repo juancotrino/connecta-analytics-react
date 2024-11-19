@@ -8,13 +8,17 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
+import { authClient } from '@/lib/auth/client';
+
+//const user = auth.currentUser;
+
 const user = {
-  name: 'Sofia Rivers',
+  name: 'Test',
   avatar: '/assets/avatar.png',
-  jobTitle: 'Senior Developer',
-  country: 'USA',
-  city: 'Los Angeles',
-  timezone: 'GTM-7',
+  //jobTitle: 'Senior Developer',
+  country: 'Colombia',
+  city: 'Bogotá',
+  timezone: 'GTM-5',
 } as const;
 
 export function AccountInfo(): React.JSX.Element {
