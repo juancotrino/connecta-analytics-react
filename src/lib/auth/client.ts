@@ -14,8 +14,7 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
 const firebaseApp: FirebaseApp = initializeApp(firebaseConfig);
@@ -98,6 +97,7 @@ class AuthClient {
       // Use Firebase's signInWithEmailAndPassword method
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      // console.log('user', user)
 
       // Get the user's token and save it in local storage
       const token = await user.getIdToken();
@@ -178,7 +178,7 @@ class AuthClient {
         return { data: null, error: 'User document not found' };
       }
     } catch (error) {
-      return { error: (error as Error).message };
+      return { error: `An error occurred while fetching user: ${(error as Error).message}` };
     }
   }
 
