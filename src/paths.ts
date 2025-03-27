@@ -18,6 +18,10 @@ export const paths = {
       miscellanyTools: '/dashboard/services/miscellany-tools',
     },
     settings: '/dashboard/settings',
+    studyAdmin: {
+      home: '/dashboard/study-administrator',
+      studyForm: '/dashboard/study-administrator/study-form/:id?', // id is optional
+    },
   },
   errors: { notFound: '/errors/not-found' },
 } as const;
