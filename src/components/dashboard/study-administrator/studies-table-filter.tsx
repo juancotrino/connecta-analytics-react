@@ -1,7 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { TextField, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent, Checkbox } from "@mui/material";
-import { Stack } from "@mui/system";
-import { formatString } from "@/methods/string.methods";
+import React, { useEffect, useState } from 'react';
+import { formatString } from '@/methods/string.methods';
+import {
+  Checkbox,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { Stack } from '@mui/system';
 
 export interface StudiesTableFilterProps {
   multiSelectFilters: {
@@ -32,7 +41,7 @@ export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
   setStudyIdFilter,
   filterOptions,
 }) => {
-  const [localStudyId, setLocalStudyId] = useState<string>(studyIdFilter?.toString() || "");
+  const [localStudyId, setLocalStudyId] = useState<string>(studyIdFilter?.toString() || '');
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -50,45 +59,48 @@ export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
   };
 
   return (
-    <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-      <TextField
-        sx={{ minWidth: 100 }}
-        fullWidth
-        label="Study ID"
-        type="number"
-        value={localStudyId}
-        onChange={(event) => setLocalStudyId(event.target.value)}
-      />
+    <>
+      <Typography variant="h5" component="span">
+        Filters
+      </Typography>
+      <Stack direction="row" spacing={2} sx={{ mb: 2, mt: 2 }}>
+        <TextField
+          sx={{ minWidth: 100 }}
+          fullWidth
+          label="Study ID"
+          type="number"
+          value={localStudyId}
+          onChange={(event) => setLocalStudyId(event.target.value)}
+        />
 
-      {Object.keys(multiSelectFilters).map((key) => (
-        <FormControl key={key} sx={{ minWidth: 150 }} fullWidth>
-          <InputLabel>{formatString(key)}</InputLabel>
-          <Select
-            multiple
-            label={formatString(key)}
-            value={multiSelectFilters[key as keyof typeof multiSelectFilters]}
-            onChange={handleChange(key as keyof typeof multiSelectFilters)}
-            renderValue={(selected) => (selected as string[]).join(", ")}
-            MenuProps={{
-              PaperProps: {
-                style: {
-                  maxHeight: 250,
-                  overflow: "auto",
+        {Object.keys(multiSelectFilters).map((key) => (
+          <FormControl key={key} sx={{ minWidth: 150 }} fullWidth>
+            <InputLabel>{formatString(key)}</InputLabel>
+            <Select
+              multiple
+              label={formatString(key)}
+              value={multiSelectFilters[key as keyof typeof multiSelectFilters]}
+              onChange={handleChange(key as keyof typeof multiSelectFilters)}
+              renderValue={(selected) => (selected as string[]).join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 250,
+                    overflow: 'auto',
+                  },
                 },
-              },
-            }}
-          >
-            {filterOptions[key]?.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox
-                  checked={multiSelectFilters[key as keyof typeof multiSelectFilters].indexOf(option) > -1}
-                />
-                {option}
-              </MenuItem>
-            )) || <MenuItem disabled>No data available</MenuItem>}
-          </Select>
-        </FormControl>
-      ))}
-    </Stack>
+              }}
+            >
+              {filterOptions[key]?.map((option) => (
+                <MenuItem key={option} value={option}>
+                  <Checkbox checked={multiSelectFilters[key as keyof typeof multiSelectFilters].indexOf(option) > -1} />
+                  {option}
+                </MenuItem>
+              )) || <MenuItem disabled>No data available</MenuItem>}
+            </Select>
+          </FormControl>
+        ))}
+      </Stack>
+    </>
   );
 };
