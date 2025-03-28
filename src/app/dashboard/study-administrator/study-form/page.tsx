@@ -11,12 +11,12 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { BusinessData } from "@/types/business";
-import { getBusinessData } from "@/lib/business.service";
+import { getBusinessData } from "@/lib/businessService";
 import CountryForm from "@/components/dashboard/study-administrator/country-form";
 import { Country } from "@/types/country";
 import { NewStudy } from "@/types/study";
 import { AddedStudyCountries } from "@/components/dashboard/study-administrator/added-study-countries";
-import { createStudy } from "@/lib/studies.service";
+import { createStudy } from "@/lib/studiesService";
 import { useRouter } from "next/navigation";
 
 

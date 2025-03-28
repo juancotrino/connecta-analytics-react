@@ -11,8 +11,10 @@ import {
 import { StudyActions } from "./studies-table-actions";
 import { StudyTableData } from "@/types/study";
 import moment from "moment";
+import { Loader } from "@/components/shared/Loader";
 
 interface StudiesTableProps {
+  loading: boolean;
   studies: StudyTableData[];
   totalStudies: number;
   page: number;
@@ -22,6 +24,7 @@ interface StudiesTableProps {
 }
 
 export function StudiesTable({
+  loading,
   studies,
   totalStudies,
   page,
@@ -52,8 +55,8 @@ export function StudiesTable({
               <TableCell>Actions</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Client</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell>Updated At</TableCell>
+              <TableCell>Creation Date</TableCell>
+              <TableCell>Last Update</TableCell>
               <TableCell>Country</TableCell>
               <TableCell>Methodology</TableCell>
               <TableCell>Type</TableCell>
@@ -63,50 +66,60 @@ export function StudiesTable({
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
-            {studies.map((study, rowIndex) => {
-              const studyIdStr = study.study_id.toString();
-              const isFirstRow = !renderedStudies.has(studyIdStr);
+            {/* Show Loader when loading */}
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={12} align="center">
+                  <Loader message="Loading studies..." size="small" />
+                </TableCell>
+              </TableRow>
+            ) : (
+              studies.map((study, rowIndex) => {
+                const studyIdStr = study.study_id.toString();
+                const isFirstRow = !renderedStudies.has(studyIdStr);
 
-              // Increment the count of times this `study_id` has been rendered
-              renderedStudies.set(studyIdStr, (renderedStudies.get(studyIdStr) || 0) + 1);
+                // Increment render count for study_id
+                renderedStudies.set(studyIdStr, (renderedStudies.get(studyIdStr) || 0) + 1);
 
-              return (
-                <TableRow key={rowIndex}>
-                  {isFirstRow && (
-                    <>
-                      <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                        {study.study_id}
-                      </TableCell>
-                      <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                        <StudyActions study={study} />
-                      </TableCell>
-                      <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                        {study.study_name}
-                      </TableCell>
-                      <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                        {study.client}
-                      </TableCell>
-                      <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                        {moment(study.creation_date).format("DD/MM/YY HH:mm")}
-                      </TableCell>
-                      <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                        {moment(study.last_update_date).format("DD/MM/YY HH:mm")}
-                      </TableCell>
-                    </>
-                  )}
+                return (
+                  <TableRow key={rowIndex}>
+                    {isFirstRow && (
+                      <>
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          {study.study_id}
+                        </TableCell>
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          <StudyActions study={study} />
+                        </TableCell>
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          {study.study_name}
+                        </TableCell>
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          {study.client}
+                        </TableCell>
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          {moment(study.creation_date).format("DD/MM/YY HH:mm")}
+                        </TableCell>
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          {moment(study.last_update_date).format("DD/MM/YY HH:mm")}
+                        </TableCell>
+                      </>
+                    )}
 
-                  {/* Render the rest of the columns for the current row */}
-                  <TableCell>{study.country}</TableCell>
-                  <TableCell>{study.methodology}</TableCell>
-                  <TableCell>{study.study_type}</TableCell>
-                  <TableCell>{study.value}</TableCell>
-                  <TableCell>{study.currency}</TableCell>
-                  <TableCell>{study.consultant}</TableCell>
-                  <TableCell>{study.status}</TableCell>
-                </TableRow>
-              );
-            })}
+                    {/* Columns for the current row */}
+                    <TableCell>{study.country}</TableCell>
+                    <TableCell>{study.methodology}</TableCell>
+                    <TableCell>{study.study_type}</TableCell>
+                    <TableCell>{study.value}</TableCell>
+                    <TableCell>{study.currency}</TableCell>
+                    <TableCell>{study.consultant}</TableCell>
+                    <TableCell>{study.status}</TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>

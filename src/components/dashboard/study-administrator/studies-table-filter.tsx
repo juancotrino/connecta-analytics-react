@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { formatString } from '@/methods/string.methods';
+import { formatString } from '@/methods/stringMethods';
 import {
   Checkbox,
   FormControl,

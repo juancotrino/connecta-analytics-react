@@ -6,7 +6,7 @@ import { Stack } from "@mui/system";
 
 interface AddedStudyCountriesProps {
   countries: Country[];
-  setCountries: ([...countries]: Country[]) => void;
+  setCountries: React.Dispatch<React.SetStateAction<Country[]>>;
 }
 
 export function AddedStudyCountries({ countries, setCountries }: AddedStudyCountriesProps) {
