@@ -3,7 +3,7 @@ import type { Viewport } from 'next';
 
 import '@/styles/global.css';
 
-import { UserProvider } from '@/contexts/user-context';
+import { UserProvider } from '@/contexts/UserContext';
 import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 import { LoadingProvider } from '@/providers/LoadingProvider';

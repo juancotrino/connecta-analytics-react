@@ -1,12 +1,11 @@
 'use client';
 
 import type { User } from '@/types/user';
+import axios from 'axios';
 
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, Auth } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, setDoc, Firestore } from 'firebase/firestore';
-// import { getStorage, FirebaseStorage } from 'firebase/storage';
-
+import { getFirestore, doc, getDoc, setDoc, Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -18,26 +17,12 @@ const firebaseConfig = {
 };
 
 const firebaseApp: FirebaseApp = initializeApp(firebaseConfig);
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const auth: Auth = getAuth(firebaseApp);
 export const db: Firestore = getFirestore(firebaseApp);
-// export const storage: FirebaseStorage = getStorage(firebaseApp);
 
 export default firebaseApp;
-/*
-function generateToken(): string {
-  const arr = new Uint8Array(12);
-  window.crypto.getRandomValues(arr);
-  return Array.from(arr, (v) => v.toString(16).padStart(2, '0')).join('');
-}
 
-const user = {
-  id: 'USR-000',
-  avatar: '/assets/avatar.png',
-  firstName: 'Sofia',
-  lastName: 'Rivers',
-  email: 'sofia@devias.io',
-} satisfies User;
-*/
 export interface SignUpParams {
   firstName: string;
   lastName: string;
@@ -61,28 +46,18 @@ export interface ResetPasswordParams {
 
 class AuthClient {
   async signUp(params: SignUpParams): Promise<{ error?: string }> {
-    // Make API request
-    const { firstName, lastName, email, password , roles} = params;
+    const { firstName, lastName, email, password, roles } = params;
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Optionally set additional user data in Firestore
-      await setDoc(doc(db, 'users', user.uid), { email });
-
-      const token = await user.getIdToken();
-      localStorage.setItem('custom-auth-token', token);
+      // Set user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), { email }); //TODO:firstName, lastName, roles -> add?
 
       return {};
     } catch (error) {
       return { error: (error as Error).message };
     }
-
-    // // We do not handle the API, so we'll just generate a token and store it in localStorage.
-    // const token = generateToken();
-    // localStorage.setItem('custom-auth-token', token);
-
-    // return {};
   }
 
   async signInWithOAuth(_: SignInWithOAuthParams): Promise<{ error?: string }> {
@@ -91,23 +66,18 @@ class AuthClient {
 
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
     const { email, password } = params;
-
-    // Make API request
     try {
-      // Use Firebase's signInWithEmailAndPassword method
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      // console.log('user', user)
-
-      // Get the user's token and save it in local storage
-      const token = await user.getIdToken();
-      localStorage.setItem('custom-auth-token', token);
-
-      // Optionally, you can store additional user data in local storage if needed
-      localStorage.setItem('user-uid', user.uid);
-      localStorage.setItem('user-displayName', user.displayName || '');
-      localStorage.setItem('user-email', user.email || '');
-
+      // Get the ID token for the authenticated user
+      const firebaseToken = await user.getIdToken();
+      console.log('Firebase token:', firebaseToken);
+      // Get the custom authentication token from the API
+      const tokenResponse = await this.getAuthToken(firebaseToken);
+      if (tokenResponse.error) {
+        return { error: tokenResponse.error };
+      }
+      // On success return an empty object
       return {};
     } catch (error) {
       // Handle Firebase Auth errors
@@ -130,6 +100,37 @@ class AuthClient {
             errorMessage = error.message;
         }
       }
+      return { error: errorMessage };
+    }
+  }
+  
+  async getAuthToken(firebaseToken: string): Promise<{ error?: string }> {
+    try {
+      const response = await axios.get(
+        `${API_URL}auth/get_custom_token`,
+        { 
+          headers: {
+            Authorization: `Bearer ${firebaseToken}`,
+            contentType: 'application/json',
+          }
+        },
+      );
+
+      if (!response.data) {
+        return { error: 'Failed to retrieve authentication token' };
+      }
+      // Store the token in local storage
+      const token = response.data;
+      localStorage.setItem('authToken', token);
+      // On success return an empty object
+      return {};
+    } catch (error) {
+      let errorMessage = 'Failed to retrieve authentication token';
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message ||
+          'Error communicating with authentication server';
+      }
+      // Return the error message
       return { error: errorMessage };
     }
   }
@@ -170,7 +171,7 @@ class AuthClient {
             firstName: userData.firstName || '',
             lastName: userData.lastName || '',
             email: currentUser.email || '',
-            roles: roles,
+            roles: Array.isArray(userData.roles) ? userData.roles : [],
           } satisfies User,
         };
       } else {
@@ -178,17 +179,15 @@ class AuthClient {
         return { data: null, error: 'User document not found' };
       }
     } catch (error) {
-      return { error: `An error occurred while fetching user: ${(error as Error).message}` };
+      return {
+        error: `An error occurred while fetching user: ${(error as Error).message}`
+      };
     }
   }
 
   async signOut(): Promise<{ error?: string }> {
-    await auth.signOut(); // Ensure this line is awaited
-    localStorage.removeItem('custom-auth-token');
-    localStorage.removeItem('user-uid');
-    localStorage.removeItem('user-displayName');
-    localStorage.removeItem('user-email');
-
+    await auth.signOut();
+    localStorage.removeItem('authToken');
     return {};
   }
 }

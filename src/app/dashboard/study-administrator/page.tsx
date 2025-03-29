@@ -69,8 +69,10 @@ export default function Page(): React.JSX.Element {
     }).then((filteredData: StudiesData) => {
       setData(filteredData);
       setLoadingData(false);
+      hideLoading();
     }).catch((error) => {
       setLoadingData(false);
+      hideLoading();
       const errorMsg = error.message || "Error fetching studies data";
       showAlert(errorMsg, "error");
     });
@@ -85,7 +87,6 @@ export default function Page(): React.JSX.Element {
         methodology: data.methodologies,
         study_type: data.study_types,
       });
-      hideLoading();
     }).catch((error) => {
       hideLoading();
       const errorMsg = error.message || "Error fetching business data";

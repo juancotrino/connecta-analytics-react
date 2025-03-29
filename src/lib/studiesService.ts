@@ -1,6 +1,7 @@
 import { StudiesData, NewStudy } from "../types/study";
 import axios from "axios";
 import qs from "qs";
+import { getAuthHeaders } from "@/utils/authHeaders";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}studies`;
 
@@ -16,6 +17,7 @@ export const fetchStudies = async (filters: {
 }): Promise<StudiesData> => {
   try {
     const response = await axios.get(`${API_URL}/query`, {
+      ...getAuthHeaders(),
       params: {
         limit: filters.limit || 50,
         offset: filters.offset || 0,
@@ -38,7 +40,9 @@ export const fetchStudies = async (filters: {
 
 export const createStudy = async (studyData: NewStudy) => {
   try {
-    const response = await axios.post(`${API_URL}/create`, studyData);
+    const response = await axios.post(
+      `${API_URL}/create`, studyData, getAuthHeaders()
+    );
     return response.data;
   } catch (error) {
     console.error("Error creating study:", error);

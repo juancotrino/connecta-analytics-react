@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { browserLocalPersistence, browserSessionPersistence, setPersistence } from 'firebase/auth';
+import { browserLocalPersistence, setPersistence } from 'firebase/auth';
 
 import type { User } from '@/types/user';
-import { auth, authClient } from '@/lib/auth/client';
+import { auth, authClient } from '@/lib/client';
 import { logger } from '@/lib/default-logger';
 
 export interface UserContextValue {
@@ -30,30 +30,34 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
   const checkSession = React.useCallback(async (): Promise<void> => {
     try {
       await setPersistence(auth, browserLocalPersistence);
-      const { data, error } = await authClient.getUser();
 
-      if (error) {
-        logger.error(error);
-        setState((prev) => ({ ...prev, user: null, error: error || 'Something went wrong', isLoading: false }));
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
+        setState({ user: null, error: null, isLoading: false });
         return;
       }
 
-      setState((prev) => ({ ...prev, user: data ?? null, error: null, isLoading: false }));
+      const { data, error } = await authClient.getUser();
+      if (error) {
+        logger.error(error);
+        setState({ user: null, error, isLoading: false });
+        return;
+      }
+
+      setState({ user: data ?? null, error: null, isLoading: false });
     } catch (err) {
       logger.error(err);
-      setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
+      setState({ user: null, error: 'Something went wrong', isLoading: false });
     }
   }, []);
 
   React.useEffect(() => {
-    checkSession().catch((err) => {
-      logger.error(err);
-      // noop
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Expected
+    checkSession().catch((err) => logger.error(err));
   }, []);
 
-  return <UserContext.Provider value={{ ...state, checkSession }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ ...state, checkSession }}>
+    {children}
+    </UserContext.Provider>;
 }
 
 export const UserConsumer = UserContext.Consumer;
