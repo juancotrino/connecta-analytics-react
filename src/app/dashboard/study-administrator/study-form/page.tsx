@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button, Card, CardActions, CardContent, Divider,
   FormControl, FormHelperText, Grid, InputLabel, MenuItem,
-  Select, Stack, TextField, Typography
+  Select, Stack, TextField, Typography, CircularProgress
 } from "@mui/material";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -12,12 +12,15 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { BusinessData } from "@/types/business";
 import { getBusinessData } from "@/lib/businessService";
-import CountryForm from "@/components/dashboard/study-administrator/country-form";
+import CountryForm from "@/components/dashboard/study-administrator/CountryForm";
 import { Country } from "@/types/country";
 import { NewStudy } from "@/types/study";
-import { AddedStudyCountries } from "@/components/dashboard/study-administrator/added-study-countries";
+import { AddedStudyCountries } from "@/components/dashboard/study-administrator/AddedStudyCountries";
 import { createStudy } from "@/lib/studiesService";
 import { useRouter } from "next/navigation";
+import { AddCountryButton } from "@/components/dashboard/study-administrator/AddCountryButton";
+import { useAlert } from "@/providers/AlertProvider";
+import { useLoading } from "@/providers/LoadingProvider";
 
 
 const schema = z.object({
@@ -29,6 +32,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function StudyFormPage() {
+  const { showAlert } = useAlert();
+  const { showLoading, hideLoading } = useLoading();
   const router = useRouter();
   const params = useParams();
   const studyId = params?.id; // TODO: pending edit study
@@ -43,7 +48,8 @@ export default function StudyFormPage() {
     countries: []
   });
   const [countries, setCountries] = React.useState<Country[]>([]);
-  const [countriesError, setCountriesError] = React.useState(false);
+  const [addCountry, setAddCountry] = React.useState<boolean>(false);
+  const [creatingStudy, setCreatingStudy] = React.useState<boolean>(false);
 
   const {
     control, handleSubmit, formState: { errors }
@@ -56,27 +62,31 @@ export default function StudyFormPage() {
   });
 
   const fetchBusinessData = async () => {
+    showLoading();
     await getBusinessData().then((data: BusinessData) => {
       setBusinessData(data);
+      hideLoading();
     }).catch((error) => {
-      console.error("Error fetching business data:", error
-      );
+      hideLoading();
+      const errorMsg = error.message || "Error fetching business data";
+      showAlert(errorMsg, "error");
     });
   };
 
   const onSubmit = (data: FormValues) => {
-    if (!countries.length) {
-      setCountriesError(true);
-      return;
-    }
+    if (!countries.length) return;
 
+    setCreatingStudy(true);
     const studyData: NewStudy = {...data, countries};
     createStudy(studyData).then(() => {
-      //TODO: show success message
+      showAlert("Study created successfully", "success");
+      setCreatingStudy(false);
       // navigate to studies table
       router.push("/dashboard/study-administrator");
     }).catch((error) => {
-      console.error("Error creating study:", error);
+      setCreatingStudy(false);
+      const errorMsg = error.message || "Error creating study";
+      showAlert(errorMsg, "error");
     });
   };
 
@@ -134,20 +144,30 @@ export default function StudyFormPage() {
             </Grid>
           </form>
 
-          <CountryForm
-            businessData={businessData} countriesCount={countries.length}
-            countriesError={countriesError} setCountriesError={setCountriesError}
-            countries={countries} setCountries={setCountries} />
-
           <AddedStudyCountries countries={countries} setCountries={setCountries} />
+
+          {!addCountry && (
+            <AddCountryButton setAddCountry={setAddCountry} countriesCount={countries.length} />
+          )}
+
+          {addCountry && (
+            <CountryForm
+              businessData={businessData} setShowCountryForm={setAddCountry}
+              countries={countries} setCountries={setCountries} />
+          )}
         </CardContent>
 
         <Divider />
         <CardActions sx={{ justifyContent: "flex-end" }}>
-          <Button variant="outlined" onClick={() => router.push("/dashboard/study-administrator")}>
+          <Button variant="outlined" onClick={() => router.push("/dashboard/study-administrator")}
+            disabled={creatingStudy} >
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)}>
+          <Button variant="contained" color="primary"
+            onClick={handleSubmit(onSubmit)} disabled={creatingStudy}
+            startIcon={creatingStudy ? <CircularProgress size={16} />
+              : undefined}
+          >
             Create
           </Button>
         </CardActions>

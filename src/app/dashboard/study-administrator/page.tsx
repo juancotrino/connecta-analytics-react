@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Stack from "@mui/material/Stack";
-import { StudiesTableFilter } from "@/components/dashboard/study-administrator/studies-table-filter";
-import { StudiesTable } from "@/components/dashboard/study-administrator/studies-table";
+import { StudiesTableFilter } from "@/components/dashboard/study-administrator/StudiesTableFilter";
+import { StudiesTable } from "@/components/dashboard/study-administrator/StudiesTable";
 import { fetchStudies } from "@/lib/studiesService";
 import { StudiesData } from "@/types/study";
 import { Button, Card, CardContent, Typography } from "@mui/material";
