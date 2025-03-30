@@ -50,6 +50,7 @@ export default function Page(): React.JSX.Element {
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(25);
   const [loadingData, setLoadingData] = React.useState<boolean>(true);
+  const [tableCells, setTableCells] = React.useState<string[]>([]);
 
   const handlePageChange = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -130,6 +131,7 @@ export default function Page(): React.JSX.Element {
             rowsPerPage={rowsPerPage}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
+            cellHeaders={tableCells}
           />
         </CardContent>
       </Card>

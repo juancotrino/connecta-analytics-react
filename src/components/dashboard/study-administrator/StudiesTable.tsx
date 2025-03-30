@@ -8,10 +8,12 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
-import { StudyActions } from "./studies-table-actions";
+import { EditStudyButton } from "./EditStudyButton";
 import { StudyTableData } from "@/types/study";
 import moment from "moment";
 import { Loader } from "@/components/shared/Loader";
+import { ChipsList } from "./ChipsList";
+import { UploadFileButton } from "./UploadFileButton";
 
 interface StudiesTableProps {
   loading: boolean;
@@ -19,6 +21,7 @@ interface StudiesTableProps {
   totalStudies: number;
   page: number;
   rowsPerPage: number;
+  cellHeaders: string[];
   onPageChange: (event: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -29,6 +32,7 @@ export function StudiesTable({
   totalStudies,
   page,
   rowsPerPage,
+  cellHeaders,
   onPageChange,
   onRowsPerPageChange,
 }: StudiesTableProps) {
@@ -52,18 +56,21 @@ export function StudiesTable({
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Actions</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Client</TableCell>
-              <TableCell>Creation Date</TableCell>
-              <TableCell>Last Update</TableCell>
-              <TableCell>Country</TableCell>
+              <TableCell sx={{ minWidth: 128 }}>Name</TableCell>
+              <TableCell sx={{ minWidth: 128 }}>Client</TableCell>
+              <TableCell sx={{ minWidth: 128 }}>Creation Date</TableCell>
+              <TableCell sx={{ minWidth: 128 }}>Last Update</TableCell>
+              <TableCell colSpan={2} sx={{ textAlign: "center" }}>
+                Actions
+              </TableCell>
+              <TableCell sx={{ minWidth: 92 }}>Country</TableCell>
+              <TableCell sx={{ minWidth: 108 }}>Status</TableCell>
               <TableCell>Methodology</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Value</TableCell>
               <TableCell>Currency</TableCell>
-              <TableCell>Consultant</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell sx={{ minWidth: 136 }}>Consultant</TableCell>
+              <TableCell sx={{ minWidth: 260 }}>Description</TableCell>
             </TableRow>
           </TableHead>
 
@@ -71,7 +78,7 @@ export function StudiesTable({
             {/* Show Loader when loading */}
             {loading ? (
               <TableRow>
-                <TableCell colSpan={12} align="center">
+                <TableCell colSpan={3}>
                   <Loader message="Loading studies..." size="small" />
                 </TableCell>
               </TableRow>
@@ -91,9 +98,6 @@ export function StudiesTable({
                           {study.study_id}
                         </TableCell>
                         <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                          <StudyActions study={study} />
-                        </TableCell>
-                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
                           {study.study_name}
                         </TableCell>
                         <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
@@ -105,17 +109,28 @@ export function StudiesTable({
                         <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
                           {moment(study.last_update_date).format("DD/MM/YY HH:mm")}
                         </TableCell>
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          <EditStudyButton study={study} />
+                        </TableCell>
                       </>
                     )}
 
                     {/* Columns for the current row */}
+                    <TableCell>
+                      <UploadFileButton study={study} />
+                    </TableCell>
                     <TableCell>{study.country}</TableCell>
-                    <TableCell>{study.methodology}</TableCell>
-                    <TableCell>{study.study_type}</TableCell>
+                    <TableCell>{study.status}</TableCell>
+                    <TableCell>
+                      <ChipsList options={study.methodology} />
+                      </TableCell>
+                    <TableCell>
+                      <ChipsList options={study.study_type} />
+                    </TableCell>
                     <TableCell>{study.value}</TableCell>
                     <TableCell>{study.currency}</TableCell>
                     <TableCell>{study.consultant}</TableCell>
-                    <TableCell>{study.status}</TableCell>
+                    <TableCell>{study.description}</TableCell>
                   </TableRow>
                 );
               })
