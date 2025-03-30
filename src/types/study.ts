@@ -13,12 +13,12 @@ export interface StudyTableData {
   currency: string;
   description: string;
   last_update_date: string;
-  methodology: string;
+  methodology: string[];
   source: string;
   status: string;
   study_id: number; 
   study_name: string;
-  study_type: string;
+  study_type: string[];
   consultant: string;
   value: number;
 };
