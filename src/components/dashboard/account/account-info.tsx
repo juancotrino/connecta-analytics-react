@@ -8,7 +8,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { authClient } from '@/lib/auth/client';
+import { authClient } from '@/lib/client';
 
 //const user = auth.currentUser;
 

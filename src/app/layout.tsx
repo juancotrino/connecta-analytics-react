@@ -3,9 +3,11 @@ import type { Viewport } from 'next';
 
 import '@/styles/global.css';
 
-import { UserProvider } from '@/contexts/user-context';
+import { UserProvider } from '@/contexts/UserContext';
 import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
+import { LoadingProvider } from '@/providers/LoadingProvider';
+import { AlertProvider } from '@/providers/AlertProvider';
 
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
 
@@ -19,7 +21,11 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
       <body>
         <LocalizationProvider>
           <UserProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <LoadingProvider>
+              <AlertProvider>
+                <ThemeProvider>{children}</ThemeProvider>
+              </AlertProvider>
+            </LoadingProvider>
           </UserProvider>
         </LocalizationProvider>
       </body>
