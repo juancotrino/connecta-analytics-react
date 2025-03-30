@@ -4,7 +4,7 @@ export interface Country {
   study_type: string[];
   value: number | null;
   currency: string | null;
-  consultant: string | null;
+  consultant?: string | null;
   description: string | null;
   number_of_routes: number | null;
   number_of_visits: number | null;

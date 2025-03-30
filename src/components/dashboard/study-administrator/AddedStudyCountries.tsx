@@ -40,7 +40,7 @@ export function AddedStudyCountries({ countries, setCountries }: AddedStudyCount
                   Consultant: {country.consultant || 'N/A'}
                 </Typography>
                 {
-                ` — Currency: ${country.currency || 'N/A'}
+                ` | Currency: ${country.currency || 'N/A'}
                   | Value:${country.value || 'N/A'}
                   | Types: ${country.study_type.length ? country.study_type : 'N/A' }
                   | Methodologies: ${country.methodology.length ? country.methodology : 'N/A'}`

@@ -4,7 +4,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { FileArrowUp, PencilLine } from "@phosphor-icons/react";
 import { Stack } from "@mui/material";
 import { usePopover } from "@/hooks/use-popover";
-import { FileUploader } from "./file-uploader";
+import { FileUploader } from "./FileUploader";
 import { StudyTableData } from "@/types/study";
 
 

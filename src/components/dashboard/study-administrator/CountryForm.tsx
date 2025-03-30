@@ -4,10 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   Button, TextField, FormControl, FormHelperText, Grid,
-  Select, MenuItem, InputLabel, Typography, Tooltip
+  Select, MenuItem, InputLabel, Typography
 } from "@mui/material";
 import { BusinessData } from "@/types/business";
-import { WarningCircle } from "@phosphor-icons/react";
 import { Country } from "@/types/country";
 
 // Define the schema for the form
@@ -17,7 +16,6 @@ const countrySchema = z.object({
   study_type: z.array(z.string()),
   value: z.string(),
   currency: z.string(),
-  consultant: z.string(),
   description: z.string(),
   number_of_routes: z.string(),
   number_of_visits: z.string(),
@@ -26,9 +24,7 @@ const countrySchema = z.object({
 
 type CountryFormProps = {
   businessData: BusinessData;
-  countriesCount: number;
-  countriesError: boolean;
-  setCountriesError: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowCountryForm: React.Dispatch<React.SetStateAction<boolean>>;
   countries: Country[];
   setCountries: React.Dispatch<React.SetStateAction<Country[]>>;
 };
@@ -37,8 +33,8 @@ type CountryFormProps = {
 type FormValues = z.infer<typeof countrySchema>;
 
 export default function CountryForm({
-  businessData, countriesCount, countriesError,
-  setCountriesError, countries, setCountries
+  businessData, setShowCountryForm,
+  countries, setCountries
 }: CountryFormProps) {
   const initialValues = {
     country: "",
@@ -67,7 +63,6 @@ export default function CountryForm({
   const onSubmit = async (data: FormValues) => {
     const newCountry: Country = {
       ...data,
-      consultant: data.consultant || null,
       description: data.description || null,
       currency: data.currency || null,
       value: parseFloat(data.value) || null,
@@ -76,25 +71,23 @@ export default function CountryForm({
       number_of_surveys: parseInt(data.number_of_surveys) || null,
     };
     setCountries([...countries, newCountry]);
-    setCountriesError(false);
+    setShowCountryForm(false);
     reset(initialValues);
   };
 
+  // Reset and hide the country form
+  const onCancel = () => {
+    setShowCountryForm(false);
+    reset(initialValues);
+  }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h6" sx={{ margin: "16px 0",
-        display: "flex", alignItems: "center", gap: 1 }}
-        color={countriesError ? "error" : "initial"}
-      >
-        Country No. {countriesCount + 1}
-        {countriesError &&
-          <Tooltip title="At least one country is required" arrow>
-            <WarningCircle size={20} weight="fill" />
-          </Tooltip>}
+      <Typography variant="h6" sx={{ margin: "16px 0"}}>
+        Country No. {countries.length + 1}
       </Typography>
 
       <Grid container spacing={2}>
-      <Grid item md={6} xs={12}>
+      <Grid item md={12} xs={12}>
           <FormControl fullWidth error={!!errors.country}>
             <InputLabel>Country</InputLabel>
             <Controller
@@ -183,31 +176,21 @@ export default function CountryForm({
         </Grid>
 
         <Grid item md={6} xs={12}>
-          <FormControl fullWidth error={!!errors.consultant}>
-            <InputLabel>Consultant</InputLabel>
+          <FormControl fullWidth error={!!errors.value}>
             <Controller
-              name="consultant"
+              name="value"
               control={control}
               render={({ field }) => (
-                <Select {...field} label="Consultant"
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        maxHeight: 250,
-                        overflow: "auto",
-                      }
-                    },
+                <TextField {...field}
+                  label="Value/price" type="number"
+                  inputProps={{ 
+                    min: "0.01",
+                    step: "0.01"
                   }}
-                >
-                  {businessData.supervisors.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  variant="outlined" error={!!errors.value} />
               )}
             />
-            <FormHelperText>{errors.consultant?.message}</FormHelperText>
+            <FormHelperText>{errors.value?.message}</FormHelperText>
           </FormControl>
         </Grid>
 
@@ -240,26 +223,7 @@ export default function CountryForm({
           </FormControl>
         </Grid>
 
-        <Grid item md={6} xs={12}>
-          <FormControl fullWidth error={!!errors.value}>
-            <Controller
-              name="value"
-              control={control}
-              render={({ field }) => (
-                <TextField {...field}
-                  label="Value/price" type="number"
-                  inputProps={{ 
-                    min: "0.01",
-                    step: "0.01"
-                  }}
-                  variant="outlined" error={!!errors.value} />
-              )}
-            />
-            <FormHelperText>{errors.value?.message}</FormHelperText>
-          </FormControl>
-        </Grid>
-
-        <Grid item md={6} xs={12}>
+        <Grid item md={4} xs={12}>
           <FormControl fullWidth error={!!errors.number_of_routes}>
             <Controller
               name="number_of_routes"
@@ -278,7 +242,7 @@ export default function CountryForm({
           </FormControl>
         </Grid>
 
-        <Grid item md={6} xs={12}>
+        <Grid item md={4} xs={12}>
           <FormControl fullWidth error={!!errors.number_of_surveys}>
             <Controller
               name="number_of_surveys"
@@ -297,7 +261,7 @@ export default function CountryForm({
           </FormControl>
         </Grid>
 
-        <Grid item md={6} xs={12}>
+        <Grid item md={4} xs={12}>
           <FormControl fullWidth error={!!errors.number_of_visits}>
             <Controller
               name="number_of_visits"
@@ -332,9 +296,13 @@ export default function CountryForm({
         </Grid>
       </Grid>
 
+      <Button type="button" variant="outlined" size="small"
+        sx={{ mt: 2, mr: 1 }} color="error" onClick={() => onCancel()}>
+        Cancel
+      </Button>
       <Button type="submit" variant="contained" size="small"
         sx={{ mt: 2 }} color="success" >
-        Add Country
+        Save Country
       </Button>
     </form>
   );
