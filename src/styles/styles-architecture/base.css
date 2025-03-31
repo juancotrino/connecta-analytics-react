@@ -12,6 +12,8 @@ body {
   --icon-fontSize-md: 1.25rem;
   --icon-fontSize-lg: 1.5rem;
   --danger-color: #f04438;
+  --medium-gray-color: #8a94a6;
+  --light-gray-color: #cacdd4;
 }
 
 *:focus-visible {

@@ -2,6 +2,7 @@ import { StudiesData, NewStudy } from "../types/study";
 import axios from "axios";
 import qs from "qs";
 import { getAuthHeaders } from "@/utils/authHeaders";
+import { NewStudyFile } from "@/types/file";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}studies`;
 
@@ -33,7 +34,6 @@ export const fetchStudies = async (filters: {
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching data:", error);
     throw error;
   }
 };
@@ -45,7 +45,34 @@ export const createStudy = async (studyData: NewStudy) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error creating study:", error);
+    throw error;
+  }
+};
+
+export const uploadStudyFile = async (
+  fileData: NewStudyFile
+): Promise<{message: string}> => {
+  try {
+    const formData = new FormData();
+    formData.append("file", fileData.file);
+
+    const response = await axios.post(
+      `${API_URL}/upload_file/${fileData.study_id}`,
+      formData,
+      {
+        ...getAuthHeaders("multipart/form-data"),
+        params: {
+          country: fileData.country,
+          file_name: fileData.file_name,
+          study_name: fileData.study_name,
+        },
+        paramsSerializer: (params) =>
+          qs.stringify(params, { arrayFormat: "repeat" }),
+      }
+    );
+
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };
