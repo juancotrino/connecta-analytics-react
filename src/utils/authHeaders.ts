@@ -3,12 +3,12 @@
  * @returns {Object} Headers object containing the Authorization
  * and Content-Type headers
  */
-export const getAuthHeaders = () => {
+export const getAuthHeaders = (contentType: string = 'application/json') => {
   const token = localStorage.getItem('authToken');
   return {
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': contentType,
     },
   };
 };

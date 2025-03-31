@@ -8,7 +8,7 @@ export interface NewStudy {
 
 export interface StudyTableData {
   client: string;
-  country: string[];
+  country: string;
   creation_date: string;
   currency: string;
   description: string;

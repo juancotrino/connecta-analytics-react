@@ -71,7 +71,6 @@ class AuthClient {
       const user = userCredential.user;
       // Get the ID token for the authenticated user
       const firebaseToken = await user.getIdToken();
-      console.log('Firebase token:', firebaseToken);
       // Get the custom authentication token from the API
       const tokenResponse = await this.getAuthToken(firebaseToken);
       if (tokenResponse.error) {

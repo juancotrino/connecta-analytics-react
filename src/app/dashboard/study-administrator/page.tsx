@@ -62,6 +62,7 @@ export default function Page(): React.JSX.Element {
   };
 
   const fetchData = async () => {
+    setLoadingData(true);
     await fetchStudies({
       ...multiSelectFilters,
       study_id: studyIdFilter,

@@ -8,12 +8,11 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
-import { EditStudyButton } from "./EditStudyButton";
 import { StudyTableData } from "@/types/study";
 import moment from "moment";
 import { Loader } from "@/components/shared/Loader";
 import { ChipsList } from "./ChipsList";
-import { UploadFileButton } from "./UploadFileButton";
+import { StudyActionButtons } from "./StudyActionButtons";
 
 interface StudiesTableProps {
   loading: boolean;
@@ -60,9 +59,7 @@ export function StudiesTable({
               <TableCell sx={{ minWidth: 128 }}>Client</TableCell>
               <TableCell sx={{ minWidth: 128 }}>Creation Date</TableCell>
               <TableCell sx={{ minWidth: 128 }}>Last Update</TableCell>
-              <TableCell colSpan={2} sx={{ textAlign: "center" }}>
-                Actions
-              </TableCell>
+              <TableCell>Actions</TableCell>
               <TableCell sx={{ minWidth: 92 }}>Country</TableCell>
               <TableCell sx={{ minWidth: 108 }}>Status</TableCell>
               <TableCell>Methodology</TableCell>
@@ -109,15 +106,12 @@ export function StudiesTable({
                         <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
                           {moment(study.last_update_date).format("DD/MM/YY HH:mm")}
                         </TableCell>
-                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                          <EditStudyButton study={study} />
-                        </TableCell>
                       </>
                     )}
 
                     {/* Columns for the current row */}
                     <TableCell>
-                      <UploadFileButton study={study} />
+                      <StudyActionButtons study={study} />
                     </TableCell>
                     <TableCell>{study.country}</TableCell>
                     <TableCell>{study.status}</TableCell>
