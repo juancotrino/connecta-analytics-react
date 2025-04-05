@@ -4,8 +4,8 @@ import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
 import { AuthGuard } from '@/components/auth/auth-guard';
-import { MainNav } from '@/components/dashboard/layout/main-nav';
-import { SideNav } from '@/components/dashboard/layout/side-nav';
+import { MainNav } from '@/components/dashboard/layout/MainNav';
+import { SideNav } from '@/components/dashboard/layout/SideNav';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,9 +19,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           body: {
             '--MainNav-height': '56px',
             '--MainNav-zIndex': 1000,
-            '--SideNav-width': '280px',
+            '--SideNav-width': '240px',
             '--SideNav-zIndex': 1100,
-            '--MobileNav-width': '320px',
+            '--MobileNav-width': '240px',
             '--MobileNav-zIndex': 1100,
           },
         }}
