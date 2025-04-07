@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { formatString } from '@/utils/stringMethods';
+import { formatTitle } from '@/utils/formatData';
 import {
   Checkbox,
   FormControl,
@@ -63,9 +63,18 @@ export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
       <Typography variant="h5" component="span">
         Filters
       </Typography>
-      <Stack direction="row" spacing={2} sx={{ mb: 2, mt: 2 }}>
+      <Stack direction="row" spacing={2}
+        sx={{
+          mb: 1.4,
+          overflowX: 'auto',
+          flexWrap: 'nowrap',
+          scrollSnapType: 'x mandatory',
+          scrollbarWidth: 'thin',
+          '&::-webkit-scrollbar': { height: 6 },
+        }}
+      >
         <TextField
-          sx={{ minWidth: 100 }}
+          sx={{ minWidth: 100, mt: 1.5 }}
           fullWidth
           label="Study ID"
           type="number"
@@ -74,11 +83,11 @@ export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
         />
 
         {Object.keys(multiSelectFilters).map((key) => (
-          <FormControl key={key} sx={{ minWidth: 150 }} fullWidth>
-            <InputLabel>{formatString(key)}</InputLabel>
+          <FormControl key={key} sx={{ minWidth: 150, mt:1.5 }} fullWidth>
+            <InputLabel>{formatTitle(key)}</InputLabel>
             <Select
               multiple
-              label={formatString(key)}
+              label={formatTitle(key)}
               value={multiSelectFilters[key as keyof typeof multiSelectFilters]}
               onChange={handleChange(key as keyof typeof multiSelectFilters)}
               renderValue={(selected) => (selected as string[]).join(', ')}
@@ -93,7 +102,9 @@ export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
             >
               {filterOptions[key]?.map((option) => (
                 <MenuItem key={option} value={option}>
-                  <Checkbox checked={multiSelectFilters[key as keyof typeof multiSelectFilters].indexOf(option) > -1} />
+                  <Checkbox checked={multiSelectFilters[
+                    key as keyof typeof multiSelectFilters
+                  ].indexOf(option) > -1} />
                   {option}
                 </MenuItem>
               )) || <MenuItem disabled>No data available</MenuItem>}

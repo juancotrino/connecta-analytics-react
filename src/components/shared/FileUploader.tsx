@@ -36,7 +36,7 @@ export function FileUploader(
     disabled,
     onDrop: (acceptedFiles, rejectedFiles) => {
       if (rejectedFiles.length > 0) {
-        setError("Invalid file type. Please upload a valid file.");
+        setError(`Invalid file type. Accepted types: ${acceptedTypes}`);
         return;
       }
       setError("");

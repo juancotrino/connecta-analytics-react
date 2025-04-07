@@ -11,7 +11,7 @@ import { z } from "zod";
 import { Stack } from "@mui/system";
 import { getAllowedFiles } from "@/lib/businessService";
 import { useAlert } from "@/providers/AlertProvider";
-import { formatString } from "@/utils/stringMethods";
+import { formatTitle } from "@/utils/formatData";
 import { FileUploader } from "@/components/shared/FileUploader";
 import { NewStudyFile, StudyFileConfig } from "@/types/file";
 import { uploadStudyFile } from "@/lib/studiesService";
@@ -135,7 +135,7 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName }
                   <Select {...field} label="File to upload">
                     {Object.keys(fileTypes).map((key) => (
                       <MenuItem key={key} value={key}>
-                        {formatString(key)}
+                        {formatTitle(key)}
                       </MenuItem>
                     ))}
                   </Select>

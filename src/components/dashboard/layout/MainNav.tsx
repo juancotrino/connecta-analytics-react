@@ -2,32 +2,33 @@
 
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import Tooltip from '@mui/material/Tooltip';
-import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
-import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
 import { usePopover } from '@/hooks/use-popover';
+import { useUser } from '@/hooks/use-user';
 
-import { MobileNav } from './mobile-nav';
-import { UserPopover } from './user-popover';
+import { MobileNav } from './MobileNav';
+import { UserMenu } from './userMenu';
+import { Typography } from '@mui/material';
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-
   const userPopover = usePopover<HTMLDivElement>();
+  const { user } = useUser();
+
+  // TODO: implement this
+  const getInitials = (): string => {
+    return 'JC';
+  }
 
   return (
     <React.Fragment>
       <Box
         component="header"
         sx={{
-          borderBottom: '1px solid var(--mui-palette-divider)',
           backgroundColor: 'var(--mui-palette-background-paper)',
           position: 'sticky',
           top: 0,
@@ -48,39 +49,26 @@ export function MainNav(): React.JSX.Element {
             >
               <ListIcon />
             </IconButton>
-            <Tooltip title="Search">
-              <IconButton>
-                <MagnifyingGlassIcon />
-              </IconButton>
-            </Tooltip>
           </Stack>
+
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <Tooltip title="Contacts">
-              <IconButton>
-                <UsersIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Notifications">
-              <Badge badgeContent={4} color="success" variant="dot">
-                <IconButton>
-                  <BellIcon />
-                </IconButton>
-              </Badge>
-            </Tooltip>
-            <Avatar
-              onClick={userPopover.handleOpen}
+            <Typography variant="subtitle1" sx={{ display: { xs: 'none', lg: 'block' } }}>
+              {user?.name ?? 'User Name'}
+            </Typography>
+            <Avatar onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src="/assets/avatar.png"
-              sx={{ cursor: 'pointer' }}
-            />
+              sx={{ cursor: 'pointer', bgcolor: 'var(--mui-palette-primary-main)' }}>
+              {getInitials()}
+            </Avatar>
           </Stack>
         </Stack>
       </Box>
-      <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
+
+      <UserMenu anchorEl={userPopover.anchorRef.current}
+        onClose={userPopover.handleClose} open={userPopover.open} />
+
       <MobileNav
-        onClose={() => {
-          setOpenNav(false);
-        }}
+        onClose={() => { setOpenNav(false); }}
         open={openNav}
       />
     </React.Fragment>

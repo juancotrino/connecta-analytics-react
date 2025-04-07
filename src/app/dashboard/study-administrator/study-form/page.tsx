@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { AddCountryButton } from "@/components/dashboard/study-administrator/AddCountryButton";
 import { useAlert } from "@/providers/AlertProvider";
 import { useLoading } from "@/providers/LoadingProvider";
+import { BackButton } from "@/components/shared/BackButton";
 
 
 const schema = z.object({
@@ -96,7 +97,10 @@ export default function StudyFormPage() {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h4">{studyId ? "Edit Study" : "New Study"}</Typography>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <BackButton />
+        <Typography variant="h4">{studyId ? "Edit Study" : "New Study"}</Typography>
+      </Stack>
 
       <Card>
         <CardContent>
@@ -168,7 +172,7 @@ export default function StudyFormPage() {
             startIcon={creatingStudy ? <CircularProgress size={16} />
               : undefined}
           >
-            Create
+            {creatingStudy ? "Creating..." : "Create Study"}
           </Button>
         </CardActions>
       </Card>

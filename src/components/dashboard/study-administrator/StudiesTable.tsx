@@ -13,6 +13,7 @@ import moment from "moment";
 import { Loader } from "@/components/shared/Loader";
 import { ChipsList } from "./ChipsList";
 import { StudyActionButtons } from "./StudyActionButtons";
+import { formatNumber } from "@/utils/formatData";
 
 interface StudiesTableProps {
   loading: boolean;
@@ -121,7 +122,7 @@ export function StudiesTable({
                     <TableCell>
                       <ChipsList options={study.study_type} />
                     </TableCell>
-                    <TableCell>{study.value}</TableCell>
+                    <TableCell>{formatNumber(study.value)}</TableCell>
                     <TableCell>{study.currency}</TableCell>
                     <TableCell>{study.consultant}</TableCell>
                     <TableCell>{study.description}</TableCell>
