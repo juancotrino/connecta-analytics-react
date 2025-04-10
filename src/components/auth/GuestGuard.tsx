@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 
 import { paths } from '@/paths';
-import { logger } from '@/lib/default-logger';
+import { logger } from '@/utils/defaultLogger';
 import { useUser } from '@/hooks/use-user';
+import { isAuthTokenValid } from '@/utils/authToken';
 
 export interface GuestGuardProps {
   children: React.ReactNode;
@@ -18,18 +19,18 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
 
   const checkPermissions = async (): Promise<void> => {
-    if (isLoading) {
-      return;
-    }
+    if (isLoading) return;
 
     if (error) {
       setIsChecking(false);
       return;
     }
 
-    if (user) {
-      logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');
-      router.replace(paths.dashboard.services.home);
+    const token = localStorage.getItem('authToken');
+
+    if (user && token && isAuthTokenValid(token)) {
+      logger.debug('[GuestGuard]: User is logged in with valid token, redirecting to dashboard');
+      router.replace(paths.studyAdmin.home); // TODO: change this in the future
       return;
     }
 
@@ -40,16 +41,14 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
     checkPermissions().catch(() => {
       // noop
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Expected
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, error, isLoading]);
 
-  if (isChecking) {
-    return null;
-  }
+  if (isChecking) return null;
 
   if (error) {
-    return <Alert color="error">{error}</Alert>;
+    return <Alert severity="error">{error}</Alert>;
   }
 
-  return <React.Fragment>{children}</React.Fragment>;
+  return <>{children}</>;
 }

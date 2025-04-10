@@ -5,55 +5,47 @@ import RouterLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
-import { isNavItemActive } from '@/lib/is-nav-item-active';
+import { isNavItemActive } from '@/utils/isNavItemActive';
 import { Logo } from '@/components/core/logo';
-import { colorSchemes } from '@/styles/theme/color-schemes';
 
 import { navItems } from './config';
 import { navIcons } from './NavIcons';
 
-export interface MobileNavProps {
-  onClose?: () => void;
-  open?: boolean;
-  items?: NavItemConfig[];
-}
-
-export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
+export function SideNav(): React.JSX.Element {
   const pathname = usePathname();
 
   return (
-    <Drawer
-      PaperProps={{
-        sx: {
-          '--MobileNav-background': colorSchemes.light.palette.primary[100],
-          '--MobileNav-color': 'var(--mui-palette-common-white)',
-          '--NavItem-color': 'var(--mui-palette-neutral-300)',
-          '--NavItem-hover-background': 'rgba(255, 255, 255, 0.04)',
-          '--NavItem-active-background': 'var(--mui-palette-primary-main)',
-          '--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
-          '--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
-          '--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
-          '--NavItem-icon-active-color': 'var(--mui-palette-primary-contrastText)',
-          '--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
-          bgcolor: 'var(--MobileNav-background)',
-          color: 'var(--MobileNav-color)',
-          display: 'flex',
-          flexDirection: 'column',
-          maxWidth: '100%',
-          scrollbarWidth: 'none',
-          width: 'var(--MobileNav-width)',
-          zIndex: 'var(--MobileNav-zIndex)',
-          '&::-webkit-scrollbar': { display: 'none' },
-        },
+    <Box
+      sx={{
+        '--SideNav-background': '#231f20',
+        '--SideNav-color': 'var(--mui-palette-common-white)',
+        '--NavItem-color': 'var(--mui-palette-neutral-300)',
+        '--NavItem-hover-background': 'rgba(255, 255, 255, 0.04)',
+        '--NavItem-active-background': 'var(--mui-palette-primary-main)',
+        '--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
+        '--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
+        '--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
+        '--NavItem-icon-active-color': 'var(--mui-palette-primary-contrastText)',
+        '--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
+        bgcolor: 'var(--SideNav-background)',
+        color: 'var(--SideNav-color)',
+        display: { xs: 'none', lg: 'flex' },
+        flexDirection: 'column',
+        height: '100%',
+        left: 0,
+        maxWidth: '100%',
+        position: 'fixed',
+        scrollbarWidth: 'none',
+        top: 0,
+        width: 'var(--SideNav-width)',
+        zIndex: 'var(--SideNav-zIndex)',
+        '&::-webkit-scrollbar': { display: 'none' },
       }}
-      onClose={onClose}
-      open={open}
     >
       <Stack sx={{ p: 2 }}>
         <Box component={RouterLink} href={paths.home}
@@ -61,11 +53,15 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
           <Logo color="light" width={200} />
         </Box>
       </Stack>
+
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
+
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
         {renderNavItems({ pathname, items: navItems })}
       </Box>
+
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
+
       <Stack spacing={2} sx={{ p: '12px' }}>
         <div>
           <Typography color="var(--mui-palette-neutral-100)" variant="body2" fontSize={10}>
@@ -73,7 +69,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
           </Typography>
         </div>
       </Stack>
-    </Drawer>
+    </Box>
   );
 }
 

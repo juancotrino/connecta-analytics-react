@@ -12,13 +12,13 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { BusinessData } from "@/types/business";
 import { getBusinessData } from "@/lib/businessService";
-import CountryForm from "@/components/dashboard/study-administrator/CountryForm";
+import CountryForm from "@/components/study-administrator/CountryForm";
 import { Country } from "@/types/country";
 import { NewStudy } from "@/types/study";
-import { AddedStudyCountries } from "@/components/dashboard/study-administrator/AddedStudyCountries";
+import { AddedStudyCountries } from "@/components/study-administrator/AddedStudyCountries";
 import { createStudy } from "@/lib/studiesService";
 import { useRouter } from "next/navigation";
-import { AddCountryButton } from "@/components/dashboard/study-administrator/AddCountryButton";
+import { AddCountryButton } from "@/components/study-administrator/AddCountryButton";
 import { useAlert } from "@/providers/AlertProvider";
 import { useLoading } from "@/providers/LoadingProvider";
 import { BackButton } from "@/components/shared/BackButton";
@@ -32,7 +32,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export default function StudyFormPage() {
+export default function StudyForm() {
   const { showAlert } = useAlert();
   const { showLoading, hideLoading } = useLoading();
   const router = useRouter();
@@ -83,7 +83,7 @@ export default function StudyFormPage() {
       showAlert("Study created successfully", "success");
       setCreatingStudy(false);
       // navigate to studies table
-      router.push("/dashboard/study-administrator");
+      router.push("/study-administrator");
     }).catch((error) => {
       setCreatingStudy(false);
       const errorMsg = error.message || "Error creating study";
@@ -163,7 +163,7 @@ export default function StudyFormPage() {
 
         <Divider />
         <CardActions sx={{ justifyContent: "flex-end" }}>
-          <Button variant="outlined" onClick={() => router.push("/dashboard/study-administrator")}
+          <Button variant="outlined" onClick={() => router.push("/study-administrator")}
             disabled={creatingStudy} >
             Cancel
           </Button>

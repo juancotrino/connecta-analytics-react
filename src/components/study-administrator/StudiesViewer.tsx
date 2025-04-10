@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Stack from "@mui/material/Stack";
-import { StudiesTableFilter } from "@/components/dashboard/study-administrator/StudiesTableFilter";
-import { StudiesTable } from "@/components/dashboard/study-administrator/StudiesTable";
+import { StudiesTableFilter } from "@/components/study-administrator/StudiesTableFilter";
+import { StudiesTable } from "@/components/study-administrator/StudiesTable";
 import { fetchStudies } from "@/lib/studiesService";
 import { StudiesData } from "@/types/study";
 import { Button, Card, CardContent, Typography } from "@mui/material";
@@ -15,7 +15,7 @@ import { useAlert } from "@/providers/AlertProvider";
 import { useLoading } from "@/providers/LoadingProvider";
 
 
-export default function Page(): React.JSX.Element {
+export default function StudiesViewer(): React.JSX.Element {
   const { showAlert } = useAlert();
   const { showLoading, hideLoading } = useLoading();
   const router = useRouter();
@@ -112,7 +112,7 @@ export default function Page(): React.JSX.Element {
         <Typography variant="h4">Studies Viewer</Typography>
         <Button startIcon={<Plus weight="bold" />}
           variant="contained"
-          onClick={() => router.push("/dashboard/study-administrator/study-form")}>
+          onClick={() => router.push("/study-administrator/study-form")}>
           Create Study
         </Button>
       </Stack>

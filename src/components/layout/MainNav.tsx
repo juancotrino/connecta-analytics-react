@@ -19,9 +19,12 @@ export function MainNav(): React.JSX.Element {
   const userPopover = usePopover<HTMLDivElement>();
   const { user } = useUser();
 
-  // TODO: implement this
   const getInitials = (): string => {
-    return 'JC';
+    if (!user) return 'U';
+
+    const name = user.name ?? 'User Name';
+    const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase();
+    return initials;
   }
 
   return (

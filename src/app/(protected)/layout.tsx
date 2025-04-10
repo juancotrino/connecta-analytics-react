@@ -36,7 +36,12 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         }}
       >
         <SideNav />
-        <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', pl: { lg: 'var(--SideNav-width)' } }}>
+        <Box sx={{ 
+          display: 'flex',
+          flex: '1 1 auto',
+          flexDirection: 'column',
+          pl: { lg: 'var(--SideNav-width)' } 
+        }}>
           <MainNav />
           <main>
             <Container maxWidth="xl" sx={{ py: '24px' }}>

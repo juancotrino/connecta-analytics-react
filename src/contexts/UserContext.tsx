@@ -5,7 +5,7 @@ import { browserLocalPersistence, setPersistence } from 'firebase/auth';
 
 import type { User } from '@/types/user';
 import { auth, authClient } from '@/lib/client';
-import { logger } from '@/lib/default-logger';
+import { logger } from '@/utils/defaultLogger';
 
 export interface UserContextValue {
   user: User | null;
