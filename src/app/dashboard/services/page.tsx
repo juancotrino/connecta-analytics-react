@@ -26,7 +26,7 @@ const services = [
     description:
       "This tool helps to segment Connecta's databases (SPSS) to allow easy manipulation and particular analysis of different scenarios like the Chi2.",
     logo: '/assets/logo-segment-spss.png',
-    pathname: paths.dashboard.services.segmentSpss,
+    pathname: paths.services.segmentSpss,
     updatedAt: dayjs().subtract(12, 'minute').toDate(),
   },
   {
@@ -35,7 +35,7 @@ const services = [
     description:
       "This tool helps to convert Connecta's databases (SPSS) into the defualt format used by client Belcorp.",
     logo: '/assets/logo-transform-to-belcorp.png',
-    pathname: paths.dashboard.services.transformToBelcorp,
+    pathname: paths.services.transformToBelcorp,
     updatedAt: dayjs().subtract(43, 'minute').subtract(1, 'hour').toDate(),
   },
   {
@@ -44,7 +44,7 @@ const services = [
     description:
       'This is a dashboard where TP, B2B, JR and other metrics can be seen in a compact and easy to filter and understandlable way.',
     logo: '/assets/logo-noel-dashboard.png',
-    pathname: paths.dashboard.services.noelDashboard,
+    pathname: paths.services.noelDashboard,
     updatedAt: dayjs().subtract(50, 'minute').subtract(3, 'hour').toDate(),
   },
   {
@@ -53,7 +53,7 @@ const services = [
     description:
       'This is a tool that allows the creation of a folder tree structure for a new project in a SharePoint directory that will be used by the Data Science team.',
     logo: '/assets/logo-new-project-initialization.png',
-    pathname: paths.dashboard.services.newProjectInitialization,
+    pathname: paths.services.newProjectInitialization,
     updatedAt: dayjs().subtract(7, 'minute').subtract(4, 'hour').subtract(1, 'day').toDate(),
   },
   {
@@ -61,7 +61,7 @@ const services = [
     title: 'Miscellany Tools',
     description: 'Explore some miscellany tools for survey exploration and more.',
     logo: '/assets/logo-miscellany-tools.png',
-    pathname: paths.dashboard.services.miscellanyTools,
+    pathname: paths.services.miscellanyTools,
     updatedAt: dayjs().subtract(31, 'minute').subtract(4, 'hour').subtract(5, 'day').toDate(),
   },
 ] satisfies Service[];

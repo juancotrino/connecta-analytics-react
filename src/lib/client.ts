@@ -68,7 +68,9 @@ class AuthClient {
     const { email, password } = params;
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('userCredential', userCredential);
       const user = userCredential.user;
+      console.log('user', user);
       // Get the ID token for the authenticated user
       const firebaseToken = await user.getIdToken();
       // Get the custom authentication token from the API
@@ -160,15 +162,13 @@ class AuthClient {
       if (userDoc.exists()) {
         // Extract user data from Firestore, including roles
         const userData = userDoc.data();
-        const roles = userData?.roles || []; // Default to an empty array if roles are not defined
 
         // Return the user data along with roles
         return {
           data: {
             uid: currentUser.uid,
             avatar: userData.avatar || '/assets/avatar.png',
-            firstName: userData.firstName || '',
-            lastName: userData.lastName || '',
+            name: currentUser.displayName || '',
             email: currentUser.email || '',
             roles: Array.isArray(userData.roles) ? userData.roles : [],
           } satisfies User,

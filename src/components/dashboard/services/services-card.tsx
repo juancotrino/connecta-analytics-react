@@ -7,11 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
-
-import type { NavItemConfig } from '@/types/nav';
 import { colorSchemes } from '@/styles/theme/color-schemes';
-
-import { navItems } from './config';
 
 export interface Service {
   id: string;
