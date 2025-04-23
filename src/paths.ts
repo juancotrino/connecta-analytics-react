@@ -5,6 +5,7 @@ export const paths = {
     signUp: '/auth/sign-up',
     resetPassword: '/auth/reset-password'
   },
+  welcome: '/welcome',
   studyAdmin: {
     home: '/study-administrator',
     studyForm: '/study-administrator/study-form',

@@ -26,4 +26,5 @@ export interface StudyTableData {
 export interface StudiesData {
   studies: StudyTableData[];
   total_studies: number;
+  roles_authorized_columns: string[];
 }

@@ -21,7 +21,7 @@ interface StudiesTableProps {
   totalStudies: number;
   page: number;
   rowsPerPage: number;
-  cellHeaders: string[];
+  tableHeaders: string[];
   onPageChange: (event: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -32,7 +32,7 @@ export function StudiesTable({
   totalStudies,
   page,
   rowsPerPage,
-  cellHeaders,
+  tableHeaders,
   onPageChange,
   onRowsPerPageChange,
 }: StudiesTableProps) {
@@ -46,6 +46,13 @@ export function StudiesTable({
     return counts;
   }, [studies]);
 
+  const userHasAccess = (column: string) => {
+    if (tableHeaders.includes(column)) {
+      return true;
+    }
+    return false;
+  }
+
   // Keep track of how many times each `study_id` has been rendered
   const renderedStudies = new Map<string, number>();
 
@@ -55,20 +62,28 @@ export function StudiesTable({
         <Table stickyHeader aria-label="sticky table" size="small">
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell sx={{ minWidth: 128 }}>Name</TableCell>
-              <TableCell sx={{ minWidth: 128 }}>Client</TableCell>
-              <TableCell sx={{ minWidth: 128 }}>Creation Date</TableCell>
-              <TableCell sx={{ minWidth: 128 }}>Last Update</TableCell>
+              {userHasAccess('study_id') && <TableCell>ID</TableCell>}
+              {userHasAccess('study_name') &&
+                <TableCell sx={{ minWidth: 128 }}>Name</TableCell>}
+              {userHasAccess('client') &&
+                <TableCell sx={{ minWidth: 128 }}>Client</TableCell>}
               <TableCell>Actions</TableCell>
-              <TableCell sx={{ minWidth: 92 }}>Country</TableCell>
-              <TableCell sx={{ minWidth: 108 }}>Status</TableCell>
-              <TableCell>Methodology</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Value</TableCell>
-              <TableCell>Currency</TableCell>
-              <TableCell sx={{ minWidth: 136 }}>Consultant</TableCell>
-              <TableCell sx={{ minWidth: 260 }}>Description</TableCell>
+              {userHasAccess('country') &&
+                <TableCell sx={{ minWidth: 92 }}>Country</TableCell>}
+              {userHasAccess('status') &&
+                <TableCell sx={{ minWidth: 108 }}>Status</TableCell>}
+              {userHasAccess('methodology') && <TableCell>Methodology</TableCell>}
+              {userHasAccess('study_type') && <TableCell>Type</TableCell>}
+              {userHasAccess('value') && <TableCell>Value</TableCell>}
+              {userHasAccess('currency') && <TableCell>Currency</TableCell>}
+              {userHasAccess('consultant') &&
+                <TableCell sx={{ minWidth: 136 }}>Consultant</TableCell>}
+              {userHasAccess('description') &&
+                <TableCell sx={{ minWidth: 260 }}>Description</TableCell>}
+              {userHasAccess('creation_date') &&
+                <TableCell sx={{ minWidth: 128 }}>Creation Date</TableCell>}
+              {userHasAccess('last_update_date') &&
+                <TableCell sx={{ minWidth: 128 }}>Last Update</TableCell>}
             </TableRow>
           </TableHead>
 
@@ -92,21 +107,18 @@ export function StudiesTable({
                   <TableRow key={rowIndex}>
                     {isFirstRow && (
                       <>
-                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                          {study.study_id}
-                        </TableCell>
-                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                          {study.study_name}
-                        </TableCell>
-                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                          {study.client}
-                        </TableCell>
-                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                          {moment(study.creation_date).format("DD/MM/YY HH:mm")}
-                        </TableCell>
-                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
-                          {moment(study.last_update_date).format("DD/MM/YY HH:mm")}
-                        </TableCell>
+                        {userHasAccess('study_id') &&
+                          <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                            {study.study_id}
+                          </TableCell>}
+                        {userHasAccess('study_name') &&
+                          <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                            {study.study_name}
+                          </TableCell>}
+                        {userHasAccess('client') &&
+                          <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                            {study.client}
+                          </TableCell>}
                       </>
                     )}
 
@@ -114,18 +126,29 @@ export function StudiesTable({
                     <TableCell>
                       <StudyActionButtons study={study} />
                     </TableCell>
-                    <TableCell>{study.country}</TableCell>
-                    <TableCell>{study.status}</TableCell>
-                    <TableCell>
-                      <ChipsList options={study.methodology} />
-                      </TableCell>
-                    <TableCell>
-                      <ChipsList options={study.study_type} />
-                    </TableCell>
-                    <TableCell>{formatNumber(study.value)}</TableCell>
-                    <TableCell>{study.currency}</TableCell>
-                    <TableCell>{study.consultant}</TableCell>
-                    <TableCell>{study.description}</TableCell>
+                    {userHasAccess('country') && <TableCell>{study.country}</TableCell>}
+                    {userHasAccess('status') && <TableCell>{study.status}</TableCell>}
+                    {userHasAccess('methodology') &&
+                      <TableCell>
+                        <ChipsList options={study.methodology} />
+                      </TableCell>}
+                    {userHasAccess('study_type') &&
+                      <TableCell>
+                        <ChipsList options={study.study_type} />
+                      </TableCell>}
+                    {userHasAccess('value') &&
+                      <TableCell>{formatNumber(study.value)}</TableCell>}
+                    {userHasAccess('currency') && <TableCell>{study.currency}</TableCell>}
+                    {userHasAccess('consultant') && <TableCell>{study.consultant}</TableCell>}
+                    {userHasAccess('description') && <TableCell>{study.description}</TableCell>}
+                    {userHasAccess('creation_date') &&
+                      <TableCell>
+                        {moment(study.creation_date).format("DD/MM/YY HH:mm")}
+                      </TableCell>}
+                    {userHasAccess('last_update_date') &&
+                      <TableCell>
+                        {moment(study.last_update_date).format("DD/MM/YY HH:mm")}
+                      </TableCell>}
                   </TableRow>
                 );
               })
