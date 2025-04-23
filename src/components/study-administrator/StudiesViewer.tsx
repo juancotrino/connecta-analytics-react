@@ -46,11 +46,11 @@ export default function StudiesViewer(): React.JSX.Element {
     methodology: [],
     study_type: [],
   });
-  const [data, setData] = React.useState<StudiesData>({ studies: [], total_studies: 0 });
+  const [data, setData] = React.useState<StudiesData>({ studies: [], total_studies: 0, roles_authorized_columns: [] });
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(25);
   const [loadingData, setLoadingData] = React.useState<boolean>(true);
-  const [tableCells, setTableCells] = React.useState<string[]>([]);
+  const [tableCols, setTableCols] = React.useState<string[]>([]);
 
   const handlePageChange = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -70,6 +70,7 @@ export default function StudiesViewer(): React.JSX.Element {
       offset: page * rowsPerPage,
     }).then((filteredData: StudiesData) => {
       setData(filteredData);
+      setTableCols(filteredData.roles_authorized_columns);
       setLoadingData(false);
       hideLoading();
     }).catch((error) => {
@@ -119,21 +120,22 @@ export default function StudiesViewer(): React.JSX.Element {
 
       <Card>
         <CardContent>
-          <StudiesTableFilter
-            filterOptions={filterOptions}
-            multiSelectFilters={multiSelectFilters}
-            setMultiSelectFilters={setMultiSelectFilters}
-            studyIdFilter={studyIdFilter}
-            setStudyIdFilter={setStudyIdFilter} />
-          <StudiesTable loading={loadingData}
-            studies={data.studies}
-            totalStudies={data.total_studies}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handleRowsPerPageChange}
-            cellHeaders={tableCells}
-          />
+          {tableCols.length > 0 && <>
+            <StudiesTableFilter
+              filterOptions={filterOptions}
+              multiSelectFilters={multiSelectFilters}
+              setMultiSelectFilters={setMultiSelectFilters}
+              studyIdFilter={studyIdFilter}
+              setStudyIdFilter={setStudyIdFilter} />
+            <StudiesTable loading={loadingData}
+              studies={data.studies}
+              totalStudies={data.total_studies}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              tableHeaders={tableCols} />
+          </>}
         </CardContent>
       </Card>
     </Stack>

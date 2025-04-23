@@ -30,7 +30,7 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
 
     if (user && token && isAuthTokenValid(token)) {
       logger.debug('[GuestGuard]: User is logged in with valid token, redirecting to dashboard');
-      router.replace(paths.studyAdmin.home); // TODO: change this in the future
+      router.replace(paths.welcome); // TODO: change this in the future
       return;
     }
 

@@ -20,14 +20,12 @@ export function StudyActionButtons({ study }: { study: StudyTableData }) {
           </IconButton>
         </Tooltip>
 
-        {study.status !== "Propuesta" && (
-          <Tooltip title="Upload File" arrow>
-            <IconButton aria-label="upload"
-              color="primary" onClick={uploadModal.handleOpen}>
-              <FileArrowUp weight="fill" />
-            </IconButton>
-          </Tooltip>
-        )}
+        <Tooltip title="Upload File" arrow>
+          <IconButton aria-label="upload"
+            color="primary" onClick={uploadModal.handleOpen}>
+            <FileArrowUp weight="fill" />
+          </IconButton>
+        </Tooltip>
       </Stack>
 
       {/* Upload File Modal */}
