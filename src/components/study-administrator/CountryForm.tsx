@@ -12,6 +12,7 @@ import { Country } from "@/types/country";
 // Define the schema for the form
 const countrySchema = z.object({
   country: z.string().min(1, "Country is required"),
+  consultant: z.string().min(1, "Consultant is required"),
   methodology: z.array(z.string()),
   study_type: z.array(z.string()),
   value: z.string(),
@@ -27,14 +28,14 @@ type CountryFormProps = {
   setShowCountryForm: React.Dispatch<React.SetStateAction<boolean>>;
   countries: Country[];
   setCountries: React.Dispatch<React.SetStateAction<Country[]>>;
+  countryToEdit?: { country: Country; index: number } | null;
 };
 
 // Define the FormValues type
 type FormValues = z.infer<typeof countrySchema>;
 
 export default function CountryForm({
-  businessData, setShowCountryForm,
-  countries, setCountries
+  businessData, setShowCountryForm, countries, setCountries, countryToEdit
 }: CountryFormProps) {
   const initialValues = {
     country: "",
@@ -50,18 +51,17 @@ export default function CountryForm({
   };
 
   const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
+    control, handleSubmit, reset, formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(countrySchema),
     defaultValues: initialValues,
+    mode: "onChange",
   });
+  const [countryIndex, setCountryIndex] = React.useState<number>();
 
   // Handle form submission and add the country to the list
   const onSubmit = async (data: FormValues) => {
-    const newCountry: Country = {
+    let countryToSubmit: Country = {
       ...data,
       description: data.description || null,
       currency: data.currency || null,
@@ -70,7 +70,23 @@ export default function CountryForm({
       number_of_visits: parseInt(data.number_of_visits) || null,
       number_of_surveys: parseInt(data.number_of_surveys) || null,
     };
-    setCountries([...countries, newCountry]);
+
+    if (countryToEdit) {
+      const { country, index } = countryToEdit;
+      const updatedCountries = [...countries];
+
+      updatedCountries[index] = {
+        ...countryToSubmit,
+        status: country.status,
+        creation_date: country.creation_date,
+        last_update_date: new Date().toISOString()
+      }
+
+      setCountries(updatedCountries);
+    } else {
+      setCountries([...countries, countryToSubmit]);
+    }
+
     setShowCountryForm(false);
     reset(initialValues);
   };
@@ -80,14 +96,39 @@ export default function CountryForm({
     setShowCountryForm(false);
     reset(initialValues);
   }
+
+  // Get Form title
+  const title = countryToEdit ? `Edit Country No. ${countryIndex as number + 1}` :
+    `Add Country No. ${countries.length + 1}`;
+
+  React.useEffect(() => {
+    if (countryToEdit) {
+      const { country, index } = countryToEdit;
+
+      reset({
+        country: country.country,
+        consultant: country.consultant || "",
+        methodology: country.methodology || [],
+        study_type: country.study_type || [],
+        value: country.value?.toString() || "",
+        number_of_routes: country.number_of_routes?.toString() || "",
+        number_of_visits: country.number_of_visits?.toString() || "",
+        number_of_surveys: country.number_of_surveys?.toString() || "",
+        currency: country.currency || "",
+        description: country.description || "",
+      });
+      setCountryIndex(index);
+    }
+  }, [countryToEdit, reset]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Typography variant="h6" sx={{ margin: "16px 0"}}>
-        Country No. {countries.length + 1}
+        {title}
       </Typography>
 
       <Grid container spacing={2}>
-      <Grid item md={12} xs={12}>
+        <Grid item md={6} xs={12}>
           <FormControl fullWidth error={!!errors.country}>
             <InputLabel>Country</InputLabel>
             <Controller
@@ -95,6 +136,7 @@ export default function CountryForm({
               control={control}
               render={({ field }) => (
                 <Select {...field} label="Country"
+                  disabled={!!countryToEdit}
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -114,6 +156,35 @@ export default function CountryForm({
               )}
             />
             <FormHelperText>{errors.country?.message}</FormHelperText>
+          </FormControl>
+        </Grid>
+
+        <Grid item md={6} xs={12}>
+          <FormControl fullWidth error={!!errors.consultant}>
+            <InputLabel>Consultant</InputLabel>
+            <Controller
+              name="consultant"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} label="Consultant"
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 250,
+                        overflow: "auto",
+                      },
+                    },
+                  }}
+                >
+                  {businessData.consultants.map((option) => (
+                    <MenuItem key={option} value={option} >
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+            <FormHelperText>{errors.consultant?.message}</FormHelperText>
           </FormControl>
         </Grid>
 
