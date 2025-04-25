@@ -1,4 +1,4 @@
-import { StudiesData, NewStudy } from "../types/study";
+import { StudiesData, NewStudy, StudyToEdit } from "../types/study";
 import axios from "axios";
 import qs from "qs";
 import { getAuthHeaders } from "@/utils/authHeaders";
@@ -71,6 +71,19 @@ export const uploadStudyFile = async (
       }
     );
 
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editStudy = async (studyData: StudyToEdit) => {
+  try {
+    const { study_id } = studyData;
+
+    const response = await axios.patch(
+      `${API_URL}/update/${study_id}`, studyData, getAuthHeaders()
+    );
     return response.data;
   } catch (error) {
     throw error;

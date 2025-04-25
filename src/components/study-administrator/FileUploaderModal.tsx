@@ -22,6 +22,7 @@ interface StudyFormProps {
   studyId: number;
   studyName: string;
   country: string;
+  defaultFileName: string | null;
 }
 
 const schema = z.object({
@@ -31,11 +32,13 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export function FileUploaderModal({ open, onClose, studyId, country, studyName }: StudyFormProps) {
+export function FileUploaderModal({
+  open, onClose, studyId, country, studyName, defaultFileName
+}: StudyFormProps) {
   const { showAlert } = useAlert();
   const { control, handleSubmit, reset, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { country, file_name: "" }, 
+    defaultValues: { country, file_name: defaultFileName || "" },
     mode: "onChange",
   });
 
@@ -51,7 +54,7 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName }
    */
   useEffect(() => {
     if (!open) return;
-    reset({ country, file_name: "" });
+    reset({ country, file_name: defaultFileName || "" });
 
     getAllowedFiles()
       .then(setFileTypes)
@@ -59,7 +62,7 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName }
         const errorMsg = error?.message || "Error fetching allowed files";
         showAlert(errorMsg, "error")
       });
-  }, [open, reset, country]);
+  }, [open, reset, country, defaultFileName]);
 
   /**
    * Update the accepted file types based on the selected file name.
@@ -132,7 +135,7 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName }
                 name="file_name"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} label="File to upload">
+                  <Select {...field} label="File to upload" disabled={defaultFileName !== null}>
                     {Object.keys(fileTypes).map((key) => (
                       <MenuItem key={key} value={key}>
                         {formatTitle(key)}

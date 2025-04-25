@@ -5,6 +5,6 @@ export interface BusinessData {
   sharepoint_folder_structure: string[];
   statuses: string[];
   study_types: string[];
-  supervisors: string[];
+  consultants: string[];
   countries: string[];
 };
