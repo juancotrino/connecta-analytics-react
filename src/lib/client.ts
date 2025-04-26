@@ -68,9 +68,7 @@ class AuthClient {
     const { email, password } = params;
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('userCredential', userCredential);
       const user = userCredential.user;
-      console.log('user', user);
       // Get the ID token for the authenticated user
       const firebaseToken = await user.getIdToken();
       // Get the custom authentication token from the API

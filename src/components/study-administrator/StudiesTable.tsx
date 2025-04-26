@@ -12,7 +12,8 @@ import { StudyTableData } from "@/types/study";
 import moment from "moment";
 import { Loader } from "@/components/shared/Loader";
 import { ChipsList } from "./ChipsList";
-import { StudyActionButtons } from "./StudyActionButtons";
+import { UploadFileButton } from "./UploadFileButton";
+import { EditStudyButton } from "./EditStudyButton";
 import { formatNumber } from "@/utils/formatData";
 
 interface StudiesTableProps {
@@ -67,7 +68,7 @@ export function StudiesTable({
                 <TableCell sx={{ minWidth: 128 }}>Name</TableCell>}
               {userHasAccess('client') &&
                 <TableCell sx={{ minWidth: 128 }}>Client</TableCell>}
-              <TableCell>Actions</TableCell>
+              <TableCell colSpan={2} sx={{textAlign: "center"}}>Actions</TableCell>
               {userHasAccess('country') &&
                 <TableCell sx={{ minWidth: 92 }}>Country</TableCell>}
               {userHasAccess('status') &&
@@ -119,12 +120,15 @@ export function StudiesTable({
                           <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
                             {study.client}
                           </TableCell>}
+                        <TableCell rowSpan={studyCounts.get(studyIdStr) ?? 1}>
+                          <EditStudyButton studies={studies} studyId={study.study_id} />
+                        </TableCell>
                       </>
                     )}
 
                     {/* Columns for the current row */}
                     <TableCell>
-                      <StudyActionButtons study={study} />
+                      <UploadFileButton study={study} />
                     </TableCell>
                     {userHasAccess('country') && <TableCell>{study.country}</TableCell>}
                     {userHasAccess('status') && <TableCell>{study.status}</TableCell>}

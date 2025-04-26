@@ -6,6 +6,11 @@ export interface NewStudy {
   countries: Country[];
 }
 
+export interface StudyToEdit extends NewStudy {
+  study_id: number;
+  source: string;
+}
+
 export interface StudyTableData {
   client: string;
   country: string;
@@ -21,6 +26,9 @@ export interface StudyTableData {
   study_type: string[];
   consultant: string;
   value: number;
+  number_of_surveys: number;
+  number_of_routes: number;
+  number_of_visits: number;
 };
 
 export interface StudiesData {
