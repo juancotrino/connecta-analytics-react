@@ -3,8 +3,8 @@ FROM node:20.11.1-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm cache clean --force && \
-  npm install --legacy-peer-deps && \
-  npm audit fix --force
+  npm install --legacy-peer-deps --no-audit && \
+  npm install firebase@10.12.2 --legacy-peer-deps
 COPY . .
 RUN npm run build
 
