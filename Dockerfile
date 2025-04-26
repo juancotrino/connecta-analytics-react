@@ -1,21 +1,25 @@
-# ---------- Base image for building ----------
-FROM node:23.2.0-alpine AS build
+# ---------- Base Image ----------
+FROM node:18-alpine AS deps
 
 # Set working directory
 WORKDIR /app
 
-# Copy only package.json and package-lock.json for better layer caching
+# Install dependencies (only package.json and lock file first for cache efficiency)
 COPY package*.json ./
+RUN npm ci
 
-# Clean npm cache and install dependencies safely
-RUN rm -f package-lock.json && \
-  npm cache clean --force && \
-  npm install --force --no-audit --legacy-peer-deps
+# ---------- Build Stage ----------
+FROM node:18-alpine AS builder
 
-# Copy the rest of the application
+WORKDIR /app
+
+# Copy everything from previous stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy project files
 COPY . .
 
-# Create next.config.js on the fly (adjust if you already have it)
+# Add a correct next.config.js if needed (optional override)
 RUN cat <<EOF > next.config.js
 module.exports = {
   eslint: { ignoreDuringBuilds: true },
@@ -23,28 +27,22 @@ module.exports = {
 };
 EOF
 
-# Build the Next.js app
+# Build the app
 RUN npm run build
 
-# ---------- Production image ----------
-FROM node:23.2.0-alpine AS runner
+# ---------- Production Stage ----------
+FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Install only production dependencies
-COPY --from=build /app/package*.json ./
-RUN npm install --only=production
+ENV NODE_ENV=production
 
-# Copy the built app from the build stage
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/next.config.js ./
-COPY --from=build /app/node_modules ./node_modules
-
-# If you have a custom server (e.g., server.js), copy it
-# COPY --from=build /app/server.js ./
-
-EXPOSE 8080
+# Copy only necessary files from the build
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/next.config.js ./next.config.js
 
 # Start the app
 CMD ["npm", "start"]
