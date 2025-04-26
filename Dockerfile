@@ -19,7 +19,8 @@ RUN echo 'module.exports = {\
   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "mock-bucket",\
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "mock-sender",\
   NEXT_PUBLIC_FIREBASE_APP_ID: "mock-app-id"\
-  }\
+  },\
+  output: "standalone"\
   }' > next.config.js
 
 # Run build with Firebase mock configuration
@@ -27,6 +28,7 @@ RUN NODE_ENV=production DISABLE_FIREBASE_AUTH=true npx next build
 
 # Production Stage
 FROM nginx:stable-alpine AS production
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/.next/standalone /usr/share/nginx/html
+COPY --from=build /app/.next/static /usr/share/nginx/html/.next/static
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
