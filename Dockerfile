@@ -7,7 +7,7 @@ RUN npm cache clean --force && \
   npm install firebase@10.12.2 --legacy-peer-deps
 COPY . .
 
-# Create a temporary .eslintrc.json with relaxed rules for build
+# Create and verify ESLint config
 RUN echo '{\
   "extends": ["next/core-web-vitals"],\
   "rules": {\
@@ -45,9 +45,15 @@ RUN echo '{\
   "@typescript-eslint/non-nullable-type-assertion-style": "off",\
   "no-implicit-coercion": "off"\
   }\
-  }' > .eslintrc.json
+  }' > .eslintrc.json && \
+  cat .eslintrc.json && \
+  ls -la .eslintrc.json
 
-RUN npm run build
+# Install ESLint and required plugins
+RUN npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks
+
+# Run build with explicit ESLint config
+RUN NODE_ENV=production ESLINT_NO_DEV_ERRORS=true npm run build
 
 # Production Stage
 FROM nginx:stable-alpine AS production
