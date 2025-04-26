@@ -12,14 +12,6 @@ RUN echo 'module.exports = {\
   eslint: {\
   ignoreDuringBuilds: true\
   },\
-  env: {\
-  NEXT_PUBLIC_FIREBASE_API_KEY: "mock-key-for-build",\
-  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "mock-domain",\
-  NEXT_PUBLIC_FIREBASE_PROJECT_ID: "mock-project",\
-  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "mock-bucket",\
-  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "mock-sender",\
-  NEXT_PUBLIC_FIREBASE_APP_ID: "mock-app-id"\
-  },\
   output: "standalone"\
   }' > next.config.js
 
@@ -33,6 +25,7 @@ WORKDIR /app
 # Copy the standalone build
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
 
 # Install production dependencies
 RUN npm install --production
