@@ -48,7 +48,7 @@ RUN echo '{\
   }' > .eslintrc.json
 
 # Run build with ESLint errors ignored
-RUN NODE_ENV=production DISABLE_ESLINT_PLUGIN=true next build
+RUN NODE_ENV=production DISABLE_ESLINT_PLUGIN=true npx next build
 
 # Production Stage
 FROM nginx:stable-alpine AS production
