@@ -31,7 +31,7 @@ ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
 ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
 ENV NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
 # Run build with Firebase mock configuration
-RUN NODE_ENV=production DISABLE_FIREBASE_AUTH=true npx next build
+RUN npm install --force --legacy-peer-deps --no-audit --no-cache
 
 # Production Stage
 FROM node:23.2.0-alpine AS production
