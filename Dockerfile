@@ -1,8 +1,10 @@
 # Build Stage
-FROM node:23.2.0-alpine AS build
+FROM node:20.11.1-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm cache clean --force && \
+  npm install --legacy-peer-deps && \
+  npm audit fix --force
 COPY . .
 RUN npm run build
 
