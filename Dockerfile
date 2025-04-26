@@ -27,8 +27,19 @@ RUN echo 'module.exports = {\
 RUN NODE_ENV=production DISABLE_FIREBASE_AUTH=true npx next build
 
 # Production Stage
-FROM nginx:stable-alpine AS production
-COPY --from=build /app/.next/standalone /usr/share/nginx/html
-COPY --from=build /app/.next/static /usr/share/nginx/html/.next/static
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+FROM node:20.11.1-alpine AS production
+WORKDIR /app
+
+# Copy the standalone build
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+
+# Install production dependencies
+RUN npm install --production
+
+# Expose the port Cloud Run expects
+ENV PORT=8080
+EXPOSE 8080
+
+# Start the server
+CMD ["node", "server.js"]
