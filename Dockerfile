@@ -16,7 +16,12 @@ RUN rm -f package-lock.json && \
 COPY . .
 
 # Create next.config.js on the fly (adjust if you already have it)
-RUN echo 'module.exports = {\n  eslint: { ignoreDuringBuilds: true },\n  output: "standalone"\n}' > next.config.js
+RUN cat <<EOF > next.config.js
+module.exports = {
+  eslint: { ignoreDuringBuilds: true },
+  output: 'standalone'
+};
+EOF
 
 # Build the Next.js app
 RUN npm run build
