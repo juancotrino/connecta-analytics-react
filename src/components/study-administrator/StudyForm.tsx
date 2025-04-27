@@ -106,13 +106,13 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
     if (!studyToEdit) return;
 
     const studyData: StudyToEdit = {
+      ...data,
       study_id: studyToEdit.study_id,
       source: studyToEdit.source,
-      ...data,
       countries: countries.map((country): Country => ({
         ...country,
         consultant: country.consultant || null,
-        status: country.status || "Propuesta",
+        status: country.status,
         creation_date: country.creation_date || new Date().toISOString(),
         last_update_date: country.last_update_date || new Date().toISOString()
       })),
