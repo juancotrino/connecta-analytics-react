@@ -297,7 +297,7 @@ export default function CountryForm({
                 <TextField {...field}
                   label="Value/price" type="number"
                   inputProps={{ 
-                    min: "0.01",
+                    min: "0",
                     step: "0.01"
                   }}
                   variant="outlined" error={!!errors.value} />

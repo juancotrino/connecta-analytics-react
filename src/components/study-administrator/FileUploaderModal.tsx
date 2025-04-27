@@ -54,7 +54,6 @@ export function FileUploaderModal({
    */
   useEffect(() => {
     if (!open) return;
-    reset({ country, file_name: defaultFileName || "" });
 
     getAllowedFiles()
       .then(setFileTypes)
@@ -80,7 +79,7 @@ export function FileUploaderModal({
     uploadStudyFile(fileData)
       .then(() => {
         showAlert("File uploaded successfully", "success");
-        onClose();
+        onReset();
       })
       .catch((error) => {
         const errorMsg = error?.message || "Error uploading file";
@@ -106,6 +105,12 @@ export function FileUploaderModal({
     };
 
     uploadFile(fileData);
+  };
+
+  const onReset = () => {
+    setChosenFile(null);
+    reset({ country, file_name: defaultFileName || "" });
+    onClose();
   };
 
   return (
@@ -156,7 +161,7 @@ export function FileUploaderModal({
           />
 
           <DialogActions>
-            <Button onClick={onClose} disabled={loading}>
+            <Button onClick={onReset} disabled={loading}>
               Cancel
             </Button>
             <Button type="submit" variant="contained" color="primary" disabled={loading}

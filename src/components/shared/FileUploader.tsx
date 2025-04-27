@@ -11,8 +11,10 @@ interface FileUploaderProps {
 }
 
 const mimeTypes: Record<string, string[]> = {
-  "xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
-  // Add other MIME types as needed
+  "xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+  "docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+  "pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+  "pdf": ["application/pdf"],
 };
 
 export function FileUploader(
@@ -20,6 +22,14 @@ export function FileUploader(
 ) {
   const [error, setError] = useState<string>("");
   const [internalFile, setInternalFile] = useState<File | null>(selectedFile);
+
+  // Convert the acceptedTypes string to an array of types
+  const getAcceptedTypesObj = Object.keys(mimeTypes).reduce((acc, key) => {
+    if (acceptedTypes.includes(key)) {
+      acc[key] = mimeTypes[key];
+    }
+    return acc;
+  }, {} as Record<string, string[]>);
 
   useEffect(() => {
     setInternalFile(selectedFile);
@@ -31,7 +41,7 @@ export function FileUploader(
    * It accepts a single file and validates its type based on the acceptedTypes prop.
    */
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: acceptedTypes ? { [acceptedTypes]: mimeTypes[acceptedTypes] || [] } : {},
+    accept: acceptedTypes ? getAcceptedTypesObj : {},
     multiple: false,
     disabled,
     onDrop: (acceptedFiles, rejectedFiles) => {
