@@ -8,11 +8,13 @@ import {
 } from "@mui/material";
 import { BusinessData } from "@/types/business";
 import { Country } from "@/types/country";
+import { useUser } from "@/hooks/use-user";
 
 // Define the schema for the form
 const countrySchema = z.object({
   country: z.string().min(1, "Country is required"),
   consultant: z.string().min(1, "Consultant is required"),
+  status: z.string().min(1, "Status is required"),
   methodology: z.array(z.string()),
   study_type: z.array(z.string()),
   value: z.string(),
@@ -37,6 +39,13 @@ type FormValues = z.infer<typeof countrySchema>;
 export default function CountryForm({
   businessData, setShowCountryForm, countries, setCountries, countryToEdit
 }: CountryFormProps) {
+  const { user } = useUser();
+
+  // Set the logged-in user as the default consultant if available
+  const defaultConsultant = businessData.consultants.find((consultant) => {
+    return consultant.toLowerCase() === user?.name?.toLowerCase();
+  });
+
   const initialValues = {
     country: "",
     methodology: [],
@@ -46,8 +55,9 @@ export default function CountryForm({
     number_of_visits: "",
     number_of_surveys: "",
     currency: "",
-    consultant: "",
+    consultant: defaultConsultant || "",
     description: "",
+    status: "Propuesta" 
   };
 
   const {
@@ -58,6 +68,7 @@ export default function CountryForm({
     mode: "onChange",
   });
   const [countryIndex, setCountryIndex] = React.useState<number>();
+  const [isNewCountry, setIsNewCountry] = React.useState<boolean>(true);
 
   // Handle form submission and add the country to the list
   const onSubmit = async (data: FormValues) => {
@@ -77,9 +88,7 @@ export default function CountryForm({
 
       updatedCountries[index] = {
         ...countryToSubmit,
-        status: country.status,
-        creation_date: country.creation_date,
-        last_update_date: new Date().toISOString()
+        creation_date: country.creation_date || undefined
       }
 
       setCountries(updatedCountries);
@@ -87,14 +96,15 @@ export default function CountryForm({
       setCountries([...countries, countryToSubmit]);
     }
 
-    setShowCountryForm(false);
-    reset(initialValues);
+    onResetValues();
   };
 
   // Reset and hide the country form
-  const onCancel = () => {
+  const onResetValues = () => {
     setShowCountryForm(false);
     reset(initialValues);
+    setCountryIndex(undefined);
+    setIsNewCountry(true);
   }
 
   // Get Form title
@@ -104,6 +114,7 @@ export default function CountryForm({
   React.useEffect(() => {
     if (countryToEdit) {
       const { country, index } = countryToEdit;
+      setIsNewCountry(country?.creation_date === undefined);
 
       reset({
         country: country.country,
@@ -116,6 +127,7 @@ export default function CountryForm({
         number_of_surveys: country.number_of_surveys?.toString() || "",
         currency: country.currency || "",
         description: country.description || "",
+        status: country.status || "Propuesta",
       });
       setCountryIndex(index);
     }
@@ -128,7 +140,7 @@ export default function CountryForm({
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
+        <Grid item md={4} xs={12}>
           <FormControl fullWidth error={!!errors.country}>
             <InputLabel>Country</InputLabel>
             <Controller
@@ -159,7 +171,7 @@ export default function CountryForm({
           </FormControl>
         </Grid>
 
-        <Grid item md={6} xs={12}>
+        <Grid item md={4} xs={12}>
           <FormControl fullWidth error={!!errors.consultant}>
             <InputLabel>Consultant</InputLabel>
             <Controller
@@ -185,6 +197,36 @@ export default function CountryForm({
               )}
             />
             <FormHelperText>{errors.consultant?.message}</FormHelperText>
+          </FormControl>
+        </Grid>
+
+        <Grid item md={4} xs={12}>
+          <FormControl fullWidth error={!!errors.status}>
+            <InputLabel>Status</InputLabel>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} label="Status"
+                  disabled={isNewCountry}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 250,
+                        overflow: "auto",
+                      },
+                    },
+                  }}
+                >
+                  {businessData.statuses.map((option) => (
+                    <MenuItem key={option} value={option} >
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+            <FormHelperText>{errors.status?.message}</FormHelperText>
           </FormControl>
         </Grid>
 
@@ -368,7 +410,7 @@ export default function CountryForm({
       </Grid>
 
       <Button type="button" variant="outlined" size="small"
-        sx={{ mt: 2, mr: 1 }} color="error" onClick={() => onCancel()}>
+        sx={{ mt: 2, mr: 1 }} color="error" onClick={() => onResetValues()}>
         Cancel
       </Button>
       <Button type="submit" variant="contained" size="small"

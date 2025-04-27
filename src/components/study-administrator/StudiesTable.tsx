@@ -59,7 +59,7 @@ export function StudiesTable({
 
   return (
     <>
-      <TableContainer sx={{ maxHeight: "calc(100vh - 390px)" }}>
+      <TableContainer sx={{ maxHeight: "calc(100vh - 372px)" }}>
         <Table stickyHeader aria-label="sticky table" size="small">
           <TableHead>
             <TableRow>
