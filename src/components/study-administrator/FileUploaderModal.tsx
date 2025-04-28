@@ -1,20 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { useAlert } from '@/providers/AlertProvider';
+import { formatTitle } from '@/utils/formatData';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, FormControl, InputLabel, Select,
-  MenuItem, FormHelperText,
-  CircularProgress
-} from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Stack } from "@mui/system";
-import { getAllowedFiles } from "@/lib/businessService";
-import { useAlert } from "@/providers/AlertProvider";
-import { formatTitle } from "@/utils/formatData";
-import { FileUploader } from "@/components/shared/FileUploader";
-import { NewStudyFile, StudyFileConfig } from "@/types/file";
-import { uploadStudyFile } from "@/lib/studiesService";
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
+import { Stack } from '@mui/system';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { NewStudyFile, StudyFileConfig } from '@/types/file';
+import { getAllowedFiles } from '@/lib/businessService';
+import { uploadStudyFile } from '@/lib/studiesService';
+import { FileUploader } from '@/components/shared/FileUploader';
 
 interface StudyFormProps {
   open: boolean;
@@ -26,26 +34,30 @@ interface StudyFormProps {
 }
 
 const schema = z.object({
-  country: z.string().min(1, "Country is required"),
-  file_name: z.string().min(1, "File type to upload is required"),
+  country: z.string().min(1, 'Country is required'),
+  file_name: z.string().min(1, 'File type to upload is required'),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-export function FileUploaderModal({
-  open, onClose, studyId, country, studyName, defaultFileName
-}: StudyFormProps) {
+export function FileUploaderModal({ open, onClose, studyId, country, studyName, defaultFileName }: StudyFormProps) {
   const { showAlert } = useAlert();
-  const { control, handleSubmit, reset, watch, formState: { errors } } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { country, file_name: defaultFileName || "" },
-    mode: "onChange",
+    defaultValues: { country, file_name: defaultFileName || '' },
+    mode: 'onChange',
   });
 
   const [fileTypes, setFileTypes] = useState<{ [key: string]: StudyFileConfig }>({});
   const [chosenFile, setChosenFile] = useState<File | null>(null);
-  const fileName = watch("file_name") || "";
-  const [acceptedFileTypes, setAcceptedFileTypes] = useState<string>("");
+  const fileName = watch('file_name') || '';
+  const [acceptedFileTypes, setAcceptedFileTypes] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
   /**
@@ -58,8 +70,8 @@ export function FileUploaderModal({
     getAllowedFiles()
       .then(setFileTypes)
       .catch((error) => {
-        const errorMsg = error?.message || "Error fetching allowed files";
-        showAlert(errorMsg, "error")
+        const errorMsg = error?.response?.data?.detail || error?.message || 'Error fetching allowed files';
+        showAlert(errorMsg, 'error');
       });
   }, [open, reset, country, defaultFileName]);
 
@@ -69,7 +81,7 @@ export function FileUploaderModal({
    */
   useEffect(() => {
     if (fileTypes[fileName]) {
-      setAcceptedFileTypes(fileTypes[fileName]?.file_type || "");
+      setAcceptedFileTypes(fileTypes[fileName]?.file_type || '');
       setChosenFile(null);
     }
   }, [fileName, fileTypes]);
@@ -78,20 +90,22 @@ export function FileUploaderModal({
   const uploadFile = (fileData: NewStudyFile) => {
     uploadStudyFile(fileData)
       .then(() => {
-        showAlert("File uploaded successfully", "success");
+        showAlert('File uploaded successfully', 'success');
         onReset();
       })
       .catch((error) => {
-        const errorMsg = error?.message || "Error uploading file";
-        showAlert(errorMsg, "error");
-      }).finally(() => {
+        // Extract the error detail from the response
+        const errorMsg = error?.response?.data?.detail || error?.message || 'Error uploading file';
+        showAlert(errorMsg, 'error');
+      })
+      .finally(() => {
         setLoading(false);
       });
-  }
+  };
 
   const onSubmit = (data: FormValues) => {
     if (!chosenFile) {
-      showAlert("Please select a file to upload", "error");
+      showAlert('Please select a file to upload', 'error');
       return;
     }
 
@@ -101,7 +115,7 @@ export function FileUploaderModal({
       country: data.country,
       file_name: data.file_name,
       study_name: studyName,
-      file: chosenFile
+      file: chosenFile,
     };
 
     uploadFile(fileData);
@@ -109,7 +123,7 @@ export function FileUploaderModal({
 
   const onReset = () => {
     setChosenFile(null);
-    reset({ country, file_name: defaultFileName || "" });
+    reset({ country, file_name: defaultFileName || '' });
     onClose();
   };
 
@@ -119,7 +133,7 @@ export function FileUploaderModal({
 
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2} sx={{ margin: "10px 0 20px" }}>
+          <Stack spacing={2} sx={{ margin: '10px 0 20px' }}>
             <FormControl fullWidth error={!!errors.country}>
               <InputLabel>Country</InputLabel>
               <Controller
@@ -164,9 +178,14 @@ export function FileUploaderModal({
             <Button onClick={onReset} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={loading}
-              startIcon={loading ? <CircularProgress size={16} /> : undefined}>
-              {loading ? "Uploading..." : "Upload"}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={16} /> : undefined}
+            >
+              {loading ? 'Uploading...' : 'Upload'}
             </Button>
           </DialogActions>
         </form>
