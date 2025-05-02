@@ -76,8 +76,11 @@ export default function StudiesViewer(): React.JSX.Element {
     }).catch((error) => {
       setLoadingData(false);
       hideLoading();
-      const errorMsg = error.message || "Error fetching studies data";
-      showAlert(errorMsg, "error");
+      showAlert({
+        message: "Error fetching studies data",
+        severity: "error",
+        error
+      });
     });
   }
 
@@ -92,8 +95,11 @@ export default function StudiesViewer(): React.JSX.Element {
       });
     }).catch((error) => {
       hideLoading();
-      const errorMsg = error.message || "Error fetching business data";
-      showAlert(errorMsg, "error");
+      showAlert({
+        message: "Error fetching business data",
+        severity: "error",
+        error
+      });
     });
   };
 

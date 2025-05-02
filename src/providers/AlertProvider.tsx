@@ -14,7 +14,13 @@ interface AlertState {
 }
 
 interface AlertContextType {
-  showAlert: (message: string, severity?: AlertType) => void;
+  showAlert: (
+    alertData: {
+      message: string,
+      severity?: AlertType,
+      error?: any
+    }
+  ) => void;
 }
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
@@ -26,8 +32,21 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     severity: "info",
   });
 
-  const showAlert = (message: string, severity: AlertType = "info") => {
-    setAlert({ open: true, message, severity });
+  const showAlert = ({
+    message,
+    severity = "info",
+    error,
+  }: {
+    message: string;
+    severity?: AlertType;
+    error?: any;
+  }) => {
+    const errorMsg = error ? error?.response?.data?.detail || error?.message : null;
+    setAlert({
+      open: true,
+      message: errorMsg || message,
+      severity
+    });
   };
 
   const handleClose = () => {
@@ -43,7 +62,9 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
         onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert onClose={handleClose} severity={alert.severity} variant="filled">
+        <Alert onClose={handleClose}
+          severity={alert.severity} variant="standard"
+          sx={{ maxWidth: 500 }}>
           <AlertTitle>{alert.severity.toUpperCase()}</AlertTitle>
           {alert.message}
         </Alert>
