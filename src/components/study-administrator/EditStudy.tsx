@@ -40,7 +40,10 @@ export default function EditStudy(): React.JSX.Element {
   }
 
   const onError = (errorMsg: string) => {
-    showAlert(`Error fetching Study Data: ${errorMsg}`, "error");
+    showAlert({
+      message: `Error fetching Study Data: ${errorMsg}`,
+      severity: "error",
+    });
     router.push("/study-administrator");
     localStorage.removeItem("studyToEdit");
   }

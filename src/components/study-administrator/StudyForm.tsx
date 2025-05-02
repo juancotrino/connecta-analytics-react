@@ -86,14 +86,20 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
       })
       .catch((error) => {
         hideLoading();
-        const errorMsg = error.message || 'Error fetching business data';
-        showAlert(errorMsg, 'error');
+        showAlert({
+          message: 'Error fetching business data',
+          severity: 'error',
+          error,
+        });
       });
   };
 
   const onSubmit = (data: FormValues) => {
     if (!countries.length) {
-      showAlert('Please add at least one country.', 'warning');
+      showAlert({
+        message: 'Please add at least one country to the study.',
+        severity: 'warning',
+      });
       return;
     }
 
@@ -108,15 +114,20 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
 
     createStudy(studyData)
       .then(() => {
-        showAlert('Study created successfully', 'success');
+        showAlert({
+          message: 'Study created successfully', severity: 'success'
+        });
         setIsSubmitting(false);
         // navigate to studies table
         router.push('/study-administrator');
       })
       .catch((error) => {
         setIsSubmitting(false);
-        const errorMsg = error.message || 'Error creating study';
-        showAlert(errorMsg, 'error');
+        showAlert({
+          message: 'Error creating study',
+          severity: 'error',
+          error,
+        });
       });
   };
 
@@ -140,15 +151,20 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
 
     editStudy(studyData)
       .then(() => {
-        showAlert('Study updated successfully', 'success');
+        showAlert({
+          message: 'Study updated successfully', severity: 'success'
+        });
         setIsSubmitting(false);
         // navigate to studies table
         router.push('/study-administrator');
       })
       .catch((error) => {
         setIsSubmitting(false);
-        const errorMsg = error?.response?.data?.detail || error?.message || 'Error updating study';
-        showAlert(errorMsg, 'error');
+        showAlert({
+          message: 'Error updating study',
+          severity: 'error',
+          error,
+        });
       });
   };
 

@@ -70,8 +70,11 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName, 
     getAllowedFiles()
       .then(setFileTypes)
       .catch((error) => {
-        const errorMsg = error?.response?.data?.detail || error?.message || 'Error fetching allowed files';
-        showAlert(errorMsg, 'error');
+        showAlert({
+          severity: 'error',
+          message: 'Error fetching allowed files',
+          error
+        });
       });
   }, [open, reset, country, defaultFileName]);
 
@@ -90,13 +93,17 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName, 
   const uploadFile = (fileData: NewStudyFile) => {
     uploadStudyFile(fileData)
       .then(() => {
-        showAlert('File uploaded successfully', 'success');
+        showAlert({
+          severity: 'success', message: 'File uploaded successfully',
+        });
         onReset();
       })
       .catch((error) => {
-        // Extract the error detail from the response
-        const errorMsg = error?.response?.data?.detail || error?.message || 'Error uploading file';
-        showAlert(errorMsg, 'error');
+        showAlert({
+          severity: 'error',
+          message: 'Error uploading file',
+          error
+        });
       })
       .finally(() => {
         setLoading(false);
@@ -105,7 +112,9 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName, 
 
   const onSubmit = (data: FormValues) => {
     if (!chosenFile) {
-      showAlert('Please select a file to upload', 'error');
+      showAlert({
+        severity: 'error', message: 'Please select a file to upload',
+      });
       return;
     }
 
