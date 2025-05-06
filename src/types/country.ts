@@ -11,6 +11,6 @@ export interface Country {
   number_of_surveys: number | null;
   // variables of an existing country
   status?: string;
-  creation_date?: string;
-  last_update_date?: string;
+  creation_date?: string | null;
+  last_update_date?: string | null ;
 }

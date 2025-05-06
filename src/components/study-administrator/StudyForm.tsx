@@ -115,7 +115,8 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
     createStudy(studyData)
       .then(() => {
         showAlert({
-          message: 'Study created successfully', severity: 'success'
+          message: 'Study created successfully',
+          severity: 'success',
         });
         setIsSubmitting(false);
         // navigate to studies table
@@ -143,8 +144,8 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
           ...country,
           consultant: country.consultant || null,
           status: country.status,
-          creation_date: country.creation_date || new Date().toISOString(),
-          last_update_date: country.last_update_date || new Date().toISOString(),
+          creation_date: country.creation_date || null,
+          last_update_date: country.last_update_date || null,
         })
       ),
     };
@@ -152,7 +153,8 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
     editStudy(studyData)
       .then(() => {
         showAlert({
-          message: 'Study updated successfully', severity: 'success'
+          message: 'Study updated successfully',
+          severity: 'success',
         });
         setIsSubmitting(false);
         // navigate to studies table
