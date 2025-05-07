@@ -7,8 +7,6 @@ import { StudiesTable } from "@/components/study-administrator/StudiesTable";
 import { fetchStudies } from "@/lib/studiesService";
 import { StudiesData } from "@/types/study";
 import { Button, Card, CardContent, Typography } from "@mui/material";
-import { getBusinessData } from "@/lib/businessService";
-import { BusinessData } from "@/types/business";
 import { Plus } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useAlert } from "@/providers/AlertProvider";
@@ -33,19 +31,6 @@ export default function StudiesViewer(): React.JSX.Element {
     study_type: [],
   });
   const [studyIdFilter, setStudyIdFilter] = React.useState<number | null>(null);
-  const [filterOptions, setFilterOptions] = React.useState<{
-    status: string[];
-    country: string[];
-    client: string[];
-    methodology: string[];
-    study_type: string[];
-  }>({
-    status: [],
-    country: [],
-    client: [],
-    methodology: [],
-    study_type: [],
-  });
   const [data, setData] = React.useState<StudiesData>({ studies: [], total_studies: 0, roles_authorized_columns: [] });
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(25);
@@ -84,25 +69,6 @@ export default function StudiesViewer(): React.JSX.Element {
     });
   }
 
-  const fetchBusinessData = async () => {
-    await getBusinessData().then((data: BusinessData) => {
-      setFilterOptions({
-        status: data.statuses,
-        country: data.countries,
-        client: data.clients,
-        methodology: data.methodologies,
-        study_type: data.study_types,
-      });
-    }).catch((error) => {
-      hideLoading();
-      showAlert({
-        message: "Error fetching business data",
-        severity: "error",
-        error
-      });
-    });
-  };
-
   React.useEffect(() => {
     fetchData();
   }, [multiSelectFilters, studyIdFilter, page, rowsPerPage]);
@@ -110,7 +76,6 @@ export default function StudiesViewer(): React.JSX.Element {
   // Fetch business data on initial render
   React.useEffect(() => {
     showLoading();
-    fetchBusinessData();
   }, []);
 
   return (
@@ -128,11 +93,11 @@ export default function StudiesViewer(): React.JSX.Element {
         <CardContent>
           {tableCols.length > 0 && <>
             <StudiesTableFilter
-              filterOptions={filterOptions}
               multiSelectFilters={multiSelectFilters}
               setMultiSelectFilters={setMultiSelectFilters}
               studyIdFilter={studyIdFilter}
-              setStudyIdFilter={setStudyIdFilter} />
+              setStudyIdFilter={setStudyIdFilter}
+              tableHeaders={tableCols}/>
             <StudiesTable loading={loadingData}
               studies={data.studies}
               totalStudies={data.total_studies}

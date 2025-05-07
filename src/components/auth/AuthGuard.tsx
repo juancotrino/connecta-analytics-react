@@ -31,7 +31,9 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
 
     if (!token || !isAuthTokenValid(token)) {
       logger.debug('[AuthGuard]: Invalid or expired authToken, redirecting to sign in');
-      setTokenError('Your session has expired. Please log in again.');
+      setTimeout(() => {
+        setTokenError('Your session has expired. Please log in again.');
+      }, 200);
       router.replace(paths.auth.signIn);
       return;
     }
