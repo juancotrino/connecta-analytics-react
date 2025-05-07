@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -15,6 +15,9 @@ import { ChipsList } from "./ChipsList";
 import { UploadFileButton } from "./UploadFileButton";
 import { EditStudyButton } from "./EditStudyButton";
 import { formatNumber } from "@/utils/formatData";
+import { StudyFileConfig } from "@/types/file";
+import { getAllowedFiles } from "@/lib/businessService";
+import { useAlert } from "@/providers/AlertProvider";
 
 interface StudiesTableProps {
   loading: boolean;
@@ -37,6 +40,11 @@ export function StudiesTable({
   onPageChange,
   onRowsPerPageChange,
 }: StudiesTableProps) {
+  const { showAlert } = useAlert();
+
+  // State to manage allowed file types to upload
+  const [fileTypes, setFileTypes] = useState<{ [key: string]: StudyFileConfig }>({});
+
   // Count the number of times each `study_id` appears in the list
   const studyCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -56,6 +64,21 @@ export function StudiesTable({
 
   // Keep track of how many times each `study_id` has been rendered
   const renderedStudies = new Map<string, number>();
+
+  /**
+     * Fetch the allowed files to upload for the current user
+     */
+  useEffect(() => {
+    getAllowedFiles()
+      .then(setFileTypes)
+      .catch((error) => {
+        showAlert({
+          severity: 'error',
+          message: 'Error fetching allowed files',
+          error
+        });
+      });
+  }, []);
 
   return (
     <>
@@ -128,7 +151,7 @@ export function StudiesTable({
 
                     {/* Columns for the current row */}
                     <TableCell>
-                      <UploadFileButton study={study} />
+                      <UploadFileButton study={study} fileTypes={fileTypes} />
                     </TableCell>
                     {userHasAccess('country') && <TableCell>{study.country}</TableCell>}
                     {userHasAccess('status') && <TableCell>{study.status}</TableCell>}

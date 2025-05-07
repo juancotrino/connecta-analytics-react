@@ -20,7 +20,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { NewStudyFile, StudyFileConfig } from '@/types/file';
-import { getAllowedFiles } from '@/lib/businessService';
 import { uploadStudyFile } from '@/lib/studiesService';
 import { FileUploader } from '@/components/shared/FileUploader';
 
@@ -31,6 +30,7 @@ interface StudyFormProps {
   studyName: string;
   country: string;
   defaultFileName: string | null;
+  fileTypes: { [key: string]: StudyFileConfig };
 }
 
 const schema = z.object({
@@ -40,7 +40,9 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export function FileUploaderModal({ open, onClose, studyId, country, studyName, defaultFileName }: StudyFormProps) {
+export function FileUploaderModal({
+  open, onClose, studyId, country, studyName, defaultFileName, fileTypes,
+}: StudyFormProps) {
   const { showAlert } = useAlert();
   const {
     control,
@@ -54,28 +56,20 @@ export function FileUploaderModal({ open, onClose, studyId, country, studyName, 
     mode: 'onChange',
   });
 
-  const [fileTypes, setFileTypes] = useState<{ [key: string]: StudyFileConfig }>({});
   const [chosenFile, setChosenFile] = useState<File | null>(null);
   const fileName = watch('file_name') || '';
   const [acceptedFileTypes, setAcceptedFileTypes] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
   /**
-   * Reset the form values when the modal opens
-   * and fetch the allowed files from the API.
+   * Reset the form values when the modal opens.
    */
   useEffect(() => {
-    if (!open) return;
-
-    getAllowedFiles()
-      .then(setFileTypes)
-      .catch((error) => {
-        showAlert({
-          severity: 'error',
-          message: 'Error fetching allowed files',
-          error
-        });
-      });
+    if (open) {
+      reset({ country, file_name: defaultFileName || '' });
+      setAcceptedFileTypes('');
+      setChosenFile(null);
+    }
   }, [open, reset, country, defaultFileName]);
 
   /**
