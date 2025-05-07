@@ -1,5 +1,8 @@
 import React from "react";
-import {IconButton, List, ListItem, ListItemText, Tooltip, Typography} from "@mui/material";
+import {
+  Chip, IconButton, List, ListItem,
+  ListItemText, Tooltip, Typography
+} from "@mui/material";
 import { Country } from "@/types/country";
 import {PencilLine, Trash } from "@phosphor-icons/react";
 import { Stack } from "@mui/system";
@@ -50,7 +53,26 @@ export function AddedStudyCountries({
             </Tooltip>
             </Stack>
 
-            <ListItemText primary={country.country}
+            <ListItemText primary={
+              <React.Fragment>
+                <Stack direction="row" spacing={1}
+                  sx={{ display: "flex", alignItems: "center", mb: 0.5 }}
+                >
+                  <Typography
+                    component="span"
+                    variant="body1"
+                  >
+                    {country.country}
+                  </Typography>
+                  <Chip
+                    key={index}
+                    label={country.status}
+                    size="small"
+                    color="primary"
+                    variant="outlined" />
+                </Stack>
+              </React.Fragment>
+            }
               secondary={
                 <React.Fragment>
                   <Typography
@@ -61,8 +83,8 @@ export function AddedStudyCountries({
                     Consultant: {country.consultant || 'N/A'}
                   </Typography>
                   {
-                  ` | Currency: ${country.currency || 'N/A'}
-                    | Value:${country.value || 'N/A'}
+                  ` | Value:${country.value || 'N/A'}
+                    | Currency: ${country.currency || 'N/A'}
                     | Types: ${country.study_type?.length ? country.study_type : 'N/A' }
                     | Methodologies: ${country.methodology?.length ? country.methodology : 'N/A'}`
                   }
