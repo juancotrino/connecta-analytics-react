@@ -32,6 +32,7 @@ export function UserMenu({ anchorEl, onClose, open }: UserMenuProps): React.JSX.
         logger.error('Sign out error', error);
         return;
       }
+      router.replace(paths.auth.signIn);
 
       // Refresh the auth state
       await checkSession?.();

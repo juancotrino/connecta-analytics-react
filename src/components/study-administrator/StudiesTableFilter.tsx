@@ -11,6 +11,9 @@ import {
   Typography,
 } from '@mui/material';
 import { Stack } from '@mui/system';
+import { getBusinessData } from '@/lib/businessService';
+import { BusinessData } from '@/types/business';
+import { useAlert } from '@/providers/AlertProvider';
 
 export interface StudiesTableFilterProps {
   multiSelectFilters: {
@@ -31,7 +34,7 @@ export interface StudiesTableFilterProps {
   >;
   studyIdFilter: number | null;
   setStudyIdFilter: React.Dispatch<React.SetStateAction<number | null>>;
-  filterOptions: { [key: string]: string[] };
+  tableHeaders: string[];
 }
 
 export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
@@ -39,9 +42,45 @@ export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
   setMultiSelectFilters,
   studyIdFilter,
   setStudyIdFilter,
-  filterOptions,
+  tableHeaders,
 }) => {
+  const { showAlert } = useAlert();
   const [localStudyId, setLocalStudyId] = useState<string>(studyIdFilter?.toString() || '');
+  const [filterOptions, setFilterOptions] = React.useState<{
+      status: string[];
+      country: string[];
+      client: string[];
+      methodology: string[];
+      study_type: string[];
+    }>({
+      status: [],
+      country: [],
+      client: [],
+      methodology: [],
+      study_type: [],
+    });
+
+  const fetchBusinessData = async () => {
+    await getBusinessData().then((data: BusinessData) => {
+      setFilterOptions({
+        status: data.statuses,
+        country: data.countries,
+        client: data.clients,
+        methodology: data.methodologies,
+        study_type: data.study_types,
+      });
+    }).catch((error) => {
+      showAlert({
+        message: "Error fetching business data",
+        severity: "error",
+        error
+      });
+    });
+  };
+
+  useEffect(() => {
+    fetchBusinessData();
+  }, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -83,33 +122,35 @@ export const StudiesTableFilter: React.FC<StudiesTableFilterProps> = ({
         />
 
         {Object.keys(multiSelectFilters).map((key) => (
-          <FormControl key={key} sx={{ minWidth: 150, mt:1.5 }} fullWidth>
-            <InputLabel>{formatTitle(key)}</InputLabel>
-            <Select
-              multiple
-              label={formatTitle(key)}
-              value={multiSelectFilters[key as keyof typeof multiSelectFilters]}
-              onChange={handleChange(key as keyof typeof multiSelectFilters)}
-              renderValue={(selected) => (selected as string[]).join(', ')}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 250,
-                    overflow: 'auto',
+          (tableHeaders.includes(key) && (
+            <FormControl key={key} sx={{ minWidth: 150, mt:1.5 }} fullWidth>
+              <InputLabel>{formatTitle(key)}</InputLabel>
+              <Select
+                multiple
+                label={formatTitle(key)}
+                value={multiSelectFilters[key as keyof typeof multiSelectFilters]}
+                onChange={handleChange(key as keyof typeof multiSelectFilters)}
+                renderValue={(selected) => (selected as string[]).join(', ')}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 250,
+                      overflow: 'auto',
+                    },
                   },
-                },
-              }}
-            >
-              {filterOptions[key]?.map((option) => (
-                <MenuItem key={option} value={option}>
-                  <Checkbox checked={multiSelectFilters[
+                }}
+              >
+                  {filterOptions[key as keyof typeof filterOptions]?.map((option: string) => (
+                  <MenuItem key={option} value={option}>
+                    <Checkbox checked={multiSelectFilters[
                     key as keyof typeof multiSelectFilters
-                  ].indexOf(option) > -1} />
-                  {option}
-                </MenuItem>
-              )) || <MenuItem disabled>No data available</MenuItem>}
-            </Select>
-          </FormControl>
+                    ].indexOf(option) > -1} />
+                    {option}
+                  </MenuItem>
+                  )) || <MenuItem disabled>No data available</MenuItem>}
+              </Select>
+            </FormControl>
+          ))
         ))}
       </Stack>
     </>
