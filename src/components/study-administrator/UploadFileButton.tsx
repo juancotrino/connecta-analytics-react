@@ -5,9 +5,12 @@ import { FileArrowUp } from "@phosphor-icons/react";
 import { usePopover } from "@/hooks/use-popover";
 import { FileUploaderModal } from "./FileUploaderModal";
 import { StudyTableData } from "@/types/study";
+import { StudyFileConfig } from "@/types/file";
 
 
-export function UploadFileButton({ study }: { study: StudyTableData }) {
+export function UploadFileButton(
+  { study, fileTypes }: { study: StudyTableData, fileTypes: { [key: string]: StudyFileConfig } }
+) {
   const uploadModal = usePopover();
   const getFileName = () => {
     if (study.status !== "Propuesta") return null;
@@ -18,16 +21,21 @@ export function UploadFileButton({ study }: { study: StudyTableData }) {
     <>
       <Tooltip title="Upload File" arrow>
         <IconButton aria-label="upload"
+          disabled={!fileTypes || Object.keys(fileTypes).length === 0}
           color="primary" onClick={uploadModal.handleOpen}>
           <FileArrowUp weight="fill" />
         </IconButton>
       </Tooltip>
 
       {/* Upload File Modal */}
-      <FileUploaderModal open={uploadModal.open}
-        onClose={uploadModal.handleClose} studyName={study.study_name}
-        studyId={study.study_id} country={study.country}
-        defaultFileName={getFileName()}/>
+      <FileUploaderModal
+        fileTypes={fileTypes}
+        open={uploadModal.open}
+        onClose={uploadModal.handleClose}
+        studyName={study.study_name}
+        studyId={study.study_id}
+        country={study.country}
+        defaultFileName={getFileName()} />
     </>
   );
 }
