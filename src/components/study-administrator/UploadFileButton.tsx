@@ -19,9 +19,8 @@ export function UploadFileButton(
   };
 
   const isDisabled = () => {
-    console.log("fileTypes", fileTypes);
     if (!fileTypes || Object.keys(fileTypes).length === 0) return true;
-    // If status is "Propuesta" and fileTypes does not contain "proposal"
+    // If status is "Propuesta" and fileTypes obj does not contain "proposal"
     if (study.status === "Propuesta" && !fileTypes["proposal"]) return true;
     return false;
 
