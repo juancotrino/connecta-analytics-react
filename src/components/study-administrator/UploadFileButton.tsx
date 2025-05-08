@@ -6,6 +6,7 @@ import { usePopover } from "@/hooks/use-popover";
 import { FileUploaderModal } from "./FileUploaderModal";
 import { StudyTableData } from "@/types/study";
 import { StudyFileConfig } from "@/types/file";
+import { Box } from "@mui/system";
 
 
 export function UploadFileButton(
@@ -17,14 +18,26 @@ export function UploadFileButton(
     return "proposal";
   };
 
+  const isDisabled = () => {
+    console.log("fileTypes", fileTypes);
+    if (!fileTypes || Object.keys(fileTypes).length === 0) return true;
+    // If status is "Propuesta" and fileTypes does not contain "proposal"
+    if (study.status === "Propuesta" && !fileTypes["proposal"]) return true;
+    return false;
+
+  }
+
   return (
     <>
-      <Tooltip title="Upload File" arrow>
-        <IconButton aria-label="upload"
-          disabled={!fileTypes || Object.keys(fileTypes).length === 0}
-          color="primary" onClick={uploadModal.handleOpen}>
-          <FileArrowUp weight="fill" />
-        </IconButton>
+      <Tooltip title={isDisabled() ? "Not available" : "Upload File"} arrow>
+        <Box>
+          <IconButton aria-label="upload"
+            sx={{ padding: 0 }}
+            disabled={isDisabled()}
+            color="primary" onClick={uploadModal.handleOpen}>
+            <FileArrowUp weight="fill" />
+          </IconButton>
+        </Box>
       </Tooltip>
 
       {/* Upload File Modal */}
