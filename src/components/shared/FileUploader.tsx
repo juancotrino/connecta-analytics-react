@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Box, Button, Typography, IconButton } from "@mui/material";
+import { Box, Button, Typography, IconButton, Stack } from "@mui/material";
 import { Trash } from "@phosphor-icons/react";
 
 interface FileUploaderProps {
@@ -97,9 +97,16 @@ export function FileUploader(
           <Typography>
             {isDragActive ? "Drop the file here..." : "Drag & drop a file here or click to select one"}
           </Typography>
-          <Button variant="text" disabled={disabled}>
-            Select File
-          </Button>
+          <Stack direction="column" alignItems="center" justifyContent="center">
+            <Button variant="text" disabled={disabled}>
+              Select File
+            </Button>
+            {!disabled && (
+              <Typography variant="caption" sx={{ width: "100%" }}>
+                Accepted file types: {acceptedTypes}
+              </Typography>
+            )}
+          </Stack>
         </>
       )}
       {error && <Typography color="error">{error}</Typography>}
