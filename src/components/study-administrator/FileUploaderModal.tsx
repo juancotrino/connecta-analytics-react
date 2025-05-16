@@ -41,7 +41,13 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export function FileUploaderModal({
-  open, onClose, studyId, country, studyName, defaultFileName, fileTypes,
+  open,
+  onClose,
+  studyId,
+  country,
+  studyName,
+  defaultFileName,
+  fileTypes,
 }: StudyFormProps) {
   const { showAlert } = useAlert();
   const {
@@ -86,9 +92,10 @@ export function FileUploaderModal({
   // Make request to upload the file
   const uploadFile = (fileData: NewStudyFile) => {
     uploadStudyFile(fileData)
-      .then(() => {
+      .then((response) => {
         showAlert({
-          severity: 'success', message: 'File uploaded successfully',
+          severity: 'success',
+          message: `File uploaded successfully. <a href="${response.file_folder}" target="_blank" style="color: inherit; text-decoration: underline;">See file</a>`,
         });
         onReset();
       })
@@ -96,7 +103,7 @@ export function FileUploaderModal({
         showAlert({
           severity: 'error',
           message: 'Error uploading file',
-          error
+          error,
         });
       })
       .finally(() => {
@@ -107,7 +114,8 @@ export function FileUploaderModal({
   const onSubmit = (data: FormValues) => {
     if (!chosenFile) {
       showAlert({
-        severity: 'error', message: 'Please select a file to upload',
+        severity: 'error',
+        message: 'Please select a file to upload',
       });
       return;
     }
@@ -158,11 +166,13 @@ export function FileUploaderModal({
                 control={control}
                 render={({ field }) => (
                   <Select {...field} label="File to upload" disabled={defaultFileName !== null}>
-                    {Object.keys(fileTypes).map((key) => (
-                      <MenuItem key={key} value={key}>
-                        {formatTitle(key)}
-                      </MenuItem>
-                    ))}
+                    {Object.keys(fileTypes)
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((key) => (
+                        <MenuItem key={key} value={key}>
+                          {formatTitle(key)}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />

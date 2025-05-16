@@ -102,12 +102,12 @@ class AuthClient {
       return { error: errorMessage };
     }
   }
-  
+
   async getAuthToken(firebaseToken: string): Promise<{ error?: string }> {
     try {
       const response = await axios.get(
         `${API_URL}auth/get_custom_token`,
-        { 
+        {
           headers: {
             Authorization: `Bearer ${firebaseToken}`,
             contentType: 'application/json',

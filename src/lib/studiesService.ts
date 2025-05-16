@@ -6,14 +6,14 @@ import { NewStudyFile } from "@/types/file";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}studies`;
 
-export const fetchStudies = async (filters: { 
-  limit: number; 
-  offset: number; 
-  study_id: number | null; 
-  status: string[]; 
-  country: string[]; 
-  client: string[]; 
-  methodology: string[]; 
+export const fetchStudies = async (filters: {
+  limit: number;
+  offset: number;
+  study_id: number | null;
+  status: string[];
+  country: string[];
+  client: string[];
+  methodology: string[];
   study_type: string[];
 }): Promise<StudiesData> => {
   try {
@@ -51,7 +51,7 @@ export const createStudy = async (studyData: NewStudy) => {
 
 export const uploadStudyFile = async (
   fileData: NewStudyFile
-): Promise<{message: string}> => {
+): Promise<{message: string; file_folder: string}> => {
   try {
     const formData = new FormData();
     formData.append("file", fileData.file);

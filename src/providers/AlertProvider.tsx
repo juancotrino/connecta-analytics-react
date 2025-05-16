@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import { AlertTitle } from "@mui/material";
+import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { AlertTitle } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
-type AlertType = "success" | "error" | "warning" | "info";
+type AlertType = 'success' | 'error' | 'warning' | 'info';
 
 interface AlertState {
   open: boolean;
@@ -14,13 +14,7 @@ interface AlertState {
 }
 
 interface AlertContextType {
-  showAlert: (
-    alertData: {
-      message: string,
-      severity?: AlertType,
-      error?: any
-    }
-  ) => void;
+  showAlert: (alertData: { message: string; severity?: AlertType; error?: any }) => void;
 }
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
@@ -28,24 +22,16 @@ const AlertContext = createContext<AlertContextType | undefined>(undefined);
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alert, setAlert] = useState<AlertState>({
     open: false,
-    message: "",
-    severity: "info",
+    message: '',
+    severity: 'info',
   });
 
-  const showAlert = ({
-    message,
-    severity = "info",
-    error,
-  }: {
-    message: string;
-    severity?: AlertType;
-    error?: any;
-  }) => {
+  const showAlert = ({ message, severity = 'info', error }: { message: string; severity?: AlertType; error?: any }) => {
     const errorMsg = error ? error?.response?.data?.detail || error?.message : null;
     setAlert({
       open: true,
       message: errorMsg || message,
-      severity
+      severity,
     });
   };
 
@@ -60,13 +46,11 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
         open={alert.open}
         autoHideDuration={3000}
         onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Alert onClose={handleClose}
-          severity={alert.severity} variant="standard"
-          sx={{ maxWidth: 500 }}>
+        <Alert onClose={handleClose} severity={alert.severity} variant="standard" sx={{ maxWidth: 500 }}>
           <AlertTitle>{alert.severity.toUpperCase()}</AlertTitle>
-          {alert.message}
+          <div dangerouslySetInnerHTML={{ __html: alert.message }} />
         </Alert>
       </Snackbar>
     </AlertContext.Provider>
@@ -76,7 +60,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
 export const useAlert = () => {
   const context = useContext(AlertContext);
   if (!context) {
-    throw new Error("useAlert must be used within an AlertProvider");
+    throw new Error('useAlert must be used within an AlertProvider');
   }
   return context;
 };
