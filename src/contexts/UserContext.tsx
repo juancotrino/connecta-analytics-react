@@ -7,6 +7,9 @@ import type { User } from '@/types/user';
 import { auth, authClient } from '@/lib/client';
 import { logger } from '@/utils/defaultLogger';
 
+import { cleanCache } from '@/lib/businessService';
+import { isAuthTokenValid } from '@/utils/authToken';
+
 export interface UserContextValue {
   user: User | null;
   error: string | null;
@@ -29,10 +32,19 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
 
   const checkSession = React.useCallback(async (): Promise<void> => {
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token || !isAuthTokenValid(token)) {
+        cleanCache();
+        localStorage.removeItem('authToken');
+        setState({ user: null, error: 'Invalid token', isLoading: false });
+        return;
+      }
+
       await setPersistence(auth, browserLocalPersistence);
 
       const firebaseUser = auth.currentUser;
       if (!firebaseUser) {
+        cleanCache();
         setState({ user: null, error: null, isLoading: false });
         return;
       }
@@ -40,6 +52,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
       const { data, error } = await authClient.getUser();
       if (error) {
         logger.error(error);
+        cleanCache();
         setState({ user: null, error, isLoading: false });
         return;
       }
@@ -47,6 +60,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
       setState({ user: data ?? null, error: null, isLoading: false });
     } catch (err) {
       logger.error(err);
+      cleanCache();
       setState({ user: null, error: 'Something went wrong', isLoading: false });
     }
   }, []);

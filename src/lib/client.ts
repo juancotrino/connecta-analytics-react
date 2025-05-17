@@ -6,6 +6,7 @@ import axios from 'axios';
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, Auth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, Firestore } from 'firebase/firestore';
+import { cleanCache } from './businessService';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -185,6 +186,7 @@ class AuthClient {
   async signOut(): Promise<{ error?: string }> {
     await auth.signOut();
     localStorage.removeItem('authToken');
+    cleanCache();
     return {};
   }
 }

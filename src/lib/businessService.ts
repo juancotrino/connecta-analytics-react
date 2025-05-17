@@ -8,6 +8,11 @@ let businessDataCache: BusinessData | null = null;
 // Store allowed files session cache
 let allowedFilesCache: any | null = null;
 
+export const cleanCache = () => {
+  businessDataCache = null;
+  allowedFilesCache = null;
+}
+
 /**
  * Fetches business data from the API
  * @returns {Promise<BusinessData>} Business data
