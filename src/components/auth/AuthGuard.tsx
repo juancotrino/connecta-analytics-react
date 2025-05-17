@@ -27,14 +27,6 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
       return;
     }
 
-    const token = localStorage.getItem('authToken');
-
-    if (!token || !isAuthTokenValid(token)) {
-      logger.debug('[AuthGuard]: Invalid or expired authToken, redirecting to sign in');
-      router.replace(paths.auth.signIn);
-      return;
-    }
-
     if (!user) {
       logger.debug('[AuthGuard]: No Firestore user found, redirecting to sign in');
       router.replace(paths.auth.signIn);
