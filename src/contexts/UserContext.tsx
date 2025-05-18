@@ -1,14 +1,13 @@
 'use client';
 
 import * as React from 'react';
+import { isAuthTokenValid } from '@/utils/authToken';
+import { logger } from '@/utils/defaultLogger';
 import { browserLocalPersistence, setPersistence } from 'firebase/auth';
 
 import type { User } from '@/types/user';
-import { auth, authClient } from '@/lib/client';
-import { logger } from '@/utils/defaultLogger';
-
 import { cleanCache } from '@/lib/businessService';
-import { isAuthTokenValid } from '@/utils/authToken';
+import { auth, authClient } from '@/lib/client';
 
 export interface UserContextValue {
   user: User | null;
@@ -36,7 +35,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
       if (!token || !isAuthTokenValid(token)) {
         cleanCache();
         localStorage.removeItem('authToken');
-        setState({ user: null, error: 'Invalid token', isLoading: false });
+        setState({ user: null, error: null, isLoading: false });
         return;
       }
 
@@ -69,9 +68,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     checkSession().catch((err) => logger.error(err));
   }, []);
 
-  return <UserContext.Provider value={{ ...state, checkSession }}>
-    {children}
-    </UserContext.Provider>;
+  return <UserContext.Provider value={{ ...state, checkSession }}>{children}</UserContext.Provider>;
 }
 
 export const UserConsumer = UserContext.Consumer;
