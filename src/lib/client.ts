@@ -184,10 +184,17 @@ class AuthClient {
   }
 
   async signOut(): Promise<{ error?: string }> {
-    await auth.signOut();
-    localStorage.removeItem('authToken');
-    cleanCache();
-    return {};
+    try {
+      // First clean the cache and remove the token
+      cleanCache();
+      localStorage.removeItem('authToken');
+
+      // Then sign out from Firebase
+      await auth.signOut();
+      return {};
+    } catch (error) {
+      return { error: (error as Error).message };
+    }
   }
 }
 
