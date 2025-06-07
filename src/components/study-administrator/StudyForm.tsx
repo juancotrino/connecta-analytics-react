@@ -210,7 +210,13 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
                     name="study_name"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} label="Name" variant="outlined" error={!!errors.study_name} />
+                      <TextField
+                        {...field}
+                        label="Name"
+                        variant="outlined"
+                        error={!!errors.study_name}
+                        disabled={!!studyToEdit}
+                      />
                     )}
                   />
                   <FormHelperText>{errors.study_name?.message}</FormHelperText>
@@ -243,6 +249,7 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
                         ))}
                       </Select>
                     )}
+                    disabled={!!studyToEdit}
                   />
                   <FormHelperText>{errors.client?.message}</FormHelperText>
                 </FormControl>
