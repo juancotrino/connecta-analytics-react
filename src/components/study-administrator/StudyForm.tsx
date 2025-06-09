@@ -233,6 +233,7 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
                       <Select
                         {...field}
                         label="Client"
+                        disabled={!!studyToEdit}
                         MenuProps={{
                           PaperProps: {
                             style: {
@@ -249,7 +250,6 @@ export default function StudyForm({ studyToEdit }: { studyToEdit?: StudyToEdit }
                         ))}
                       </Select>
                     )}
-                    disabled={!!studyToEdit}
                   />
                   <FormHelperText>{errors.client?.message}</FormHelperText>
                 </FormControl>
